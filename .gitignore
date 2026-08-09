@@ -1,0 +1,12 @@
+node_modules/
+www/
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+*.jks
+*.keystore
+
+firebase code 2.txt
+firebase code.txt
+firebase script tag.txt
