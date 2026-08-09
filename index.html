@@ -327,6 +327,7 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
 <div id="restWidgetRoot"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 /* ================= DATA ================= */
@@ -399,7 +400,6 @@ async function loadAll(){
   try{ const r=lsGet('workouts'); if(r) workouts=JSON.parse(r); }catch(e){ workouts=[]; }
   try{ const r=lsGet('activeWorkout'); if(r) activeWorkout=JSON.parse(r); }catch(e){ activeWorkout=null; }
   try{ const r=lsGet('bodymetrics'); if(r) bodymetrics=JSON.parse(r); }catch(e){}
-  await tryAutoConnectSync();
   if(!settings.setupDone){ view='onboarding'; }
   boot();
 }
@@ -409,30 +409,53 @@ async function saveWorkouts(){ if(!lsSet('workouts', JSON.stringify(workouts))) 
 async function saveActiveWorkout(){ if(activeWorkout){ lsSet('activeWorkout', JSON.stringify(activeWorkout)); } else { lsDelete('activeWorkout'); } scheduleCloudPush(); }
 async function saveBodymetrics(){ lsSet('bodymetrics', JSON.stringify(bodymetrics)); scheduleCloudPush(); }
 
-/* ================= CLOUD SYNC (optional, Firebase) ================= */
-let syncCfg = null;      // firebase config object
-let syncCode = '';       // user-chosen sync code (like a PIN)
+/* ================= CLOUD SYNC (Firebase + Google Sign-in) ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyASyASRe33WCgusbGiSaANmG36yRrnFRucCJY",
+  authDomain: "gym-workout-tracker-c0955.firebaseapp.com",
+  projectId: "gym-workout-tracker-c0955",
+  storageBucket: "gym-workout-tracker-c0955.firebasestorage.app",
+  messagingSenderId: "379853613041",
+  appId: "1:379853613041:web:67b8564e8e0ecebec5fc650"
+};
+
 let syncDb = null;
+let auth = null;
+let currentUser = null;
 let syncConnected = false;
 let syncPushTimer = null;
-let syncStatus = 'off';  // off | connecting | synced | error
+let syncStatus = 'off'; // off | connecting | synced | error
 
-function loadSyncSettings(){
+function initFirebase(){
   try{
-    const raw = lsGet('syncSettings');
-    if(raw){
-      const s = JSON.parse(raw);
-      syncCfg = s.config || null;
-      syncCode = s.code || '';
-    }
-  }catch(e){}
+    if(!window.firebase) throw new Error('Firebase SDK failed to load.');
+    if(!firebase.apps || !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    syncDb = firebase.firestore();
+    auth = firebase.auth();
+
+    auth.onAuthStateChanged(async user=>{
+      currentUser = user || null;
+      syncConnected = !!user;
+      syncStatus = user ? 'connecting' : 'off';
+
+      if(user){
+        const r = await connectSync();
+        if(r.ok) showToast('Cloud sync ready ☁️');
+        else showToast(r.msg || 'Cloud sync failed');
+      }
+      if(typeof render === 'function') render();
+    });
+  }catch(e){
+    syncStatus='error';
+    syncConnected=false;
+    console.error('Firebase init error:', e);
+  }
 }
-function saveSyncSettings(){
-  lsSet('syncSettings', JSON.stringify({config: syncCfg, code: syncCode}));
-}
+
 function bundleData(){
   return { settings, plan, workouts, activeWorkout, bodymetrics, updatedAt: Date.now() };
 }
+
 function applyBundle(b){
   if(b.settings) settings = Object.assign(settings, b.settings);
   if(b.plan) plan = b.plan;
@@ -446,64 +469,89 @@ function applyBundle(b){
   if(activeWorkout) lsSet('activeWorkout', JSON.stringify(activeWorkout)); else lsDelete('activeWorkout');
   lsSet('bodymetrics', JSON.stringify(bodymetrics));
 }
-async function connectSync(configObj, code){
+
+function userDocRef(){
+  if(!syncDb || !currentUser) return null;
+  return syncDb.collection('users').doc(currentUser.uid).collection('app').doc('state');
+}
+
+async function connectSync(){
   try{
+    if(!currentUser) return {ok:false, msg:'Please sign in with Google first.'};
+    if(!syncDb) syncDb=firebase.firestore();
+
     syncStatus='connecting';
-    if(!window.firebase){ syncStatus='error'; return {ok:false, msg:'Firebase SDK failed to load — check your internet connection.'}; }
-    if(!firebase.apps || !firebase.apps.length){ firebase.initializeApp(configObj); } else { firebase.app(); }
-    syncDb = firebase.firestore();
-    syncCfg = configObj; syncCode = code;
-    saveSyncSettings();
-    // try a read to confirm access
-    const docRef = syncDb.collection('ironlog_sync').doc(code);
-    const snap = await docRef.get();
-    syncConnected = true; syncStatus='synced';
+    const docRef=userDocRef();
+    const snap=await docRef.get();
+    const localBundle=bundleData();
+
     if(snap.exists){
-      const remote = snap.data();
-      const localBundle = bundleData();
-      if((remote.updatedAt||0) > (localBundle.updatedAt||0) - 5000){
+      const remote=snap.data();
+      if((remote.updatedAt||0) > (localBundle.updatedAt||0)){
         applyBundle(remote);
       }else{
         await docRef.set(localBundle);
       }
     }else{
-      await docRef.set(bundleData());
+      await docRef.set(localBundle);
     }
+
+    syncConnected=true;
+    syncStatus='synced';
     return {ok:true};
   }catch(e){
-    syncStatus='error'; syncConnected=false;
-    return {ok:false, msg:e.message||'Could not connect.'};
+    syncStatus='error';
+    syncConnected=false;
+    return {ok:false, msg:e.message||'Could not connect to cloud sync.'};
   }
 }
+
 function scheduleCloudPush(){
-  if(!syncConnected || !syncDb) return;
+  if(!syncConnected || !syncDb || !currentUser) return;
   clearTimeout(syncPushTimer);
-  syncPushTimer = setTimeout(async ()=>{
+  syncPushTimer=setTimeout(async()=>{
     try{
-      await syncDb.collection('ironlog_sync').doc(syncCode).set(bundleData());
+      const docRef=userDocRef();
+      if(!docRef) return;
+      await docRef.set(bundleData());
       syncStatus='synced';
-    }catch(e){ syncStatus='error'; }
-  }, 1200);
+    }catch(e){
+      syncStatus='error';
+      console.error('Cloud push error:', e);
+    }
+  },1200);
 }
+
 async function pullCloudNow(){
-  if(!syncConnected || !syncDb) return {ok:false, msg:'Not connected.'};
+  if(!syncConnected || !syncDb || !currentUser) return {ok:false,msg:'Not signed in.'};
   try{
-    const snap = await syncDb.collection('ironlog_sync').doc(syncCode).get();
-    if(snap.exists){ applyBundle(snap.data()); }
+    const snap=await userDocRef().get();
+    if(snap.exists) applyBundle(snap.data());
+    syncStatus='synced';
     return {ok:true};
-  }catch(e){ return {ok:false, msg:e.message}; }
-}
-function disconnectSync(){
-  syncConnected=false; syncCfg=null; syncCode=''; syncDb=null; syncStatus='off';
-  lsDelete('syncSettings');
-}
-async function tryAutoConnectSync(){
-  loadSyncSettings();
-  if(syncCfg && syncCode){
-    const r = await connectSync(syncCfg, syncCode);
-    return r;
+  }catch(e){
+    syncStatus='error';
+    return {ok:false,msg:e.message||'Sync failed.'};
   }
-  return {ok:false};
+}
+
+async function signInWithGoogle(){
+  try{
+    if(!auth) initFirebase();
+    const provider=new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+  }catch(e){
+    console.error('Google sign-in error:',e);
+    showToast(e.message||'Google sign-in failed.');
+  }
+}
+
+async function signOutGoogle(){
+  try{
+    await auth.signOut();
+  }catch(e){
+    showToast(e.message||'Sign out failed.');
+  }
 }
 
 /* ================= HISTORY / STATS HELPERS ================= */
@@ -1584,45 +1632,36 @@ function renderSettings(app){
   syncCard.className='card';
   const statusColor = syncConnected ? (syncStatus==='error'?'var(--danger)':'var(--good)') : 'var(--text-muted)';
   const statusText = syncConnected ? (syncStatus==='error'?'Sync error':'Connected · synced') : 'Not connected';
+
   syncCard.innerHTML=`<div class="card-title">Cloud Sync <span style="color:${statusColor}; font-size:0.68rem; text-transform:none; letter-spacing:0;">● ${statusText}</span></div>
-    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Sync your data across your phone and laptop using a free Firebase project. See setup steps below.</p>`;
-  if(!syncConnected){
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Your workout data syncs securely to your Google account across your phone and laptop using Firebase.</p>`;
+
+  if(!currentUser){
     syncCard.innerHTML+=`
-      <div class="form-group"><label class="form-label">Firebase Config (paste JSON)</label><textarea class="ex-notes" id="syncConfigInput" placeholder='{"apiKey":"...","projectId":"...", ...}' style="min-height:80px;"></textarea></div>
-      <div class="form-group"><label class="form-label">Sync Code (pick any code, use same on all devices)</label><input class="form-input" id="syncCodeInput" placeholder="e.g. vinit-gym-2026"></div>
-      <button class="btn btn-steel btn-full" id="syncConnectBtn">Connect & Sync</button>`;
+      <button class="btn btn-steel btn-full" id="googleSignInBtn">Continue with Google</button>`;
   }else{
     syncCard.innerHTML+=`
-      <div class="link-row"><span>Sync code</span><span class="mono">${escapeHtml(syncCode)}</span></div>
+      <div class="link-row"><span>Signed in as</span><span class="mono" style="font-size:0.7rem; max-width:62%; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(currentUser.email||currentUser.displayName||'Google account')}</span></div>
       <div class="form-row" style="margin-top:10px;">
         <button class="btn btn-ghost btn-block" id="syncNowBtn">Sync Now</button>
-        <button class="btn btn-danger btn-block" id="syncDisconnectBtn">Disconnect</button>
+        <button class="btn btn-danger btn-block" id="syncSignOutBtn">Sign Out</button>
       </div>`;
   }
+
   app.appendChild(syncCard);
-  if(!syncConnected){
-    syncCard.querySelector('#syncConnectBtn').onclick=async ()=>{
-      const raw=document.getElementById('syncConfigInput').value.trim();
-      const code=document.getElementById('syncCodeInput').value.trim();
-      if(!raw||!code){ showToast('Fill in both fields'); return; }
-      let cfg;
-      try{ cfg=JSON.parse(raw); }catch(e){ showToast('Config is not valid JSON'); return; }
-      showToast('Connecting...');
-      const r = await connectSync(cfg, code);
-      if(r.ok){ showToast('Connected! Synced.'); render(); }
-      else{ showToast(r.msg || 'Connection failed'); }
-    };
+
+  if(!currentUser){
+    syncCard.querySelector('#googleSignInBtn').onclick=()=>signInWithGoogle();
   }else{
-    syncCard.querySelector('#syncNowBtn').onclick=async ()=>{
+    syncCard.querySelector('#syncNowBtn').onclick=async()=>{
       showToast('Syncing...');
-      scheduleCloudPush();
-      const r = await pullCloudNow();
-      showToast(r.ok ? 'Synced' : (r.msg||'Sync failed'));
+      const r=await pullCloudNow();
+      showToast(r.ok?'Synced ☁️':(r.msg||'Sync failed'));
       render();
     };
-    syncCard.querySelector('#syncDisconnectBtn').onclick=()=>{
-      if(confirm('Disconnect cloud sync? Your data stays on this device.')){
-        disconnectSync(); showToast('Disconnected'); render();
+    syncCard.querySelector('#syncSignOutBtn').onclick=()=>{
+      if(confirm('Sign out of Google? Your cloud data will remain safe in Firebase.')){
+        signOutGoogle();
       }
     };
   }
@@ -1675,7 +1714,7 @@ async function clearAllData(){
 }
 
 /* ================= START ================= */
-loadAll();
+loadAll().then(()=>initFirebase());
 </script>
 </body>
 </html>
