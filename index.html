@@ -268,8 +268,11 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
 .set-card-tag.warm{color:var(--steel);}
 .set-card-done-badge{color:var(--good); font-size:0.72rem; font-family:'Oswald',sans-serif; letter-spacing:0.5px; display:none;}
 .set-card.done .set-card-done-badge{display:inline;}
-.stepper-group{display:flex; gap:10px;}
-.stepper-block{flex:1;}
+.stepper-group{display:flex; gap:10px; flex-wrap:wrap;}
+.stepper-block{flex:1 1 130px; min-width:130px;}
+@media (max-width:340px){
+  .stepper-block{flex:1 1 100%;}
+}
 .stepper-lbl{font-size:0.62rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; text-align:center;}
 .stepper-row{display:flex; align-items:center; gap:0; background:var(--surface-3); border-radius:10px; overflow:hidden; border:1px solid var(--border);}
 .stepper-btn{
@@ -292,6 +295,15 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
 .plate-hint b{color:var(--gold); font-family:'JetBrains Mono',monospace;}
 .plate-chip-sm{background:var(--gold-dim); color:var(--gold); border-radius:5px; padding:2px 7px; font-family:'JetBrains Mono',monospace; font-size:0.72rem;}
 .barbell-toggle-row{display:flex; align-items:center; justify-content:space-between; padding:8px 0;}
+
+.rest-ctrl-row{margin-top:14px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:12px 14px;}
+.rest-ctrl-lbl{font-size:0.62rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;}
+.rest-ctrl-inner{display:flex; align-items:center; gap:8px;}
+.rest-ctrl-inner .stepper-btn{width:38px; height:38px; border-radius:8px; background:var(--surface-3);}
+.rest-ctrl-input{width:64px; flex:none; background:var(--surface-3); border:1px solid var(--border); border-radius:8px; text-align:center; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:0.95rem; font-weight:700; height:38px;}
+.rest-ctrl-unit{font-size:0.72rem; color:var(--text-muted); margin-right:auto;}
+.rest-start-btn{background:var(--accent); color:var(--accent-text); border:none; border-radius:8px; padding:0 16px; height:38px; font-family:'Oswald',sans-serif; font-size:0.78rem; letter-spacing:0.5px; text-transform:uppercase; white-space:nowrap;}
+.rest-start-btn:active{opacity:0.85;}
 
 .ex-notes{width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:10px 12px; border-radius:8px; font-size:0.82rem; margin-top:12px; resize:vertical; min-height:44px;}
 
@@ -956,7 +968,7 @@ function renderOnboarding(app){
 function renderDashboard(app){
   const dayName = todayDayName();
   const todayPlan = plan[dayName] || {name:'',isRest:false,exercises:[]};
-  const isRest = todayPlan.isRest || (!todayPlan.name && todayPlan.exercises.length===0);
+  const isRest = !!todayPlan.isRest; // rest day is only ever set explicitly by the user in Plan editor
 
   if(settings.name){
     const greet=document.createElement('div');
@@ -1229,6 +1241,26 @@ function renderTrackExerciseCard(ex, labelPrefix){
     };
     body.appendChild(addRow);
 
+    const restCtrl=document.createElement('div');
+    restCtrl.className='rest-ctrl-row';
+    if(ex.restTime==null) ex.restTime = settings.restDefault || 90;
+    restCtrl.innerHTML=`
+      <div class="rest-ctrl-lbl">Rest Timer</div>
+      <div class="rest-ctrl-inner">
+        <button class="stepper-btn" data-act="rt-">−</button>
+        <input class="rest-ctrl-input" type="number" inputmode="numeric" value="${ex.restTime}">
+        <span class="rest-ctrl-unit">sec</span>
+        <button class="stepper-btn" data-act="rt+">+</button>
+        <button class="rest-start-btn">▶ Start</button>
+      </div>`;
+    const rtInput = restCtrl.querySelector('.rest-ctrl-input');
+    const setRt = (v)=>{ ex.restTime = Math.max(5, Math.round(v)); rtInput.value = ex.restTime; saveActiveWorkout(); };
+    restCtrl.querySelector('[data-act="rt-"]').onclick=()=> setRt(ex.restTime-15);
+    restCtrl.querySelector('[data-act="rt+"]').onclick=()=> setRt(ex.restTime+15);
+    rtInput.oninput=(e)=>{ if(e.target.value!=='') setRt(Number(e.target.value)); };
+    restCtrl.querySelector('.rest-start-btn').onclick=()=> startRest(ex.restTime);
+    body.appendChild(restCtrl);
+
     if(ex.isBarbell){
       const toggleWrap=document.createElement('div');
       toggleWrap.style.cssText='margin-top:10px; font-size:0.72rem; color:var(--text-dim);';
@@ -1312,12 +1344,12 @@ function renderSetRow(ex,s,i){
   function commitWeight(v){
     s.weight = v===''||v==null ? '' : Math.max(0, Math.round(Number(v)*100)/100);
     wInput.value = s.weight;
-    saveActiveWorkout(); maybeStartRest(ex,s); refreshCardState();
+    saveActiveWorkout(); refreshCardState();
   }
   function commitReps(v){
     s.reps = v===''||v==null ? '' : Math.max(0, Math.round(Number(v)));
     rInput.value = s.reps;
-    saveActiveWorkout(); maybeStartRest(ex,s); refreshCardState();
+    saveActiveWorkout(); refreshCardState();
   }
   function refreshCardState(){
     const done = s.weight!=='' && s.weight!=null && s.reps!=='' && s.reps!=null;
@@ -1348,8 +1380,8 @@ function renderSetRow(ex,s,i){
   }
   updatePlateHint();
 
-  wInput.oninput=(e)=>{ s.weight = e.target.value===''?'':Number(e.target.value); saveActiveWorkout(); maybeStartRest(ex,s); refreshCardState(); };
-  rInput.oninput=(e)=>{ s.reps = e.target.value===''?'':Number(e.target.value); saveActiveWorkout(); maybeStartRest(ex,s); refreshCardState(); };
+  wInput.oninput=(e)=>{ s.weight = e.target.value===''?'':Number(e.target.value); saveActiveWorkout(); refreshCardState(); };
+  rInput.oninput=(e)=>{ s.reps = e.target.value===''?'':Number(e.target.value); saveActiveWorkout(); refreshCardState(); };
 
   card.querySelector('[data-act="w-"]').onclick=()=> commitWeight(Math.max(0,(Number(s.weight)||0)-wInc));
   card.querySelector('[data-act="w+"]').onclick=()=> commitWeight((Number(s.weight)||0)+wInc);
@@ -1361,13 +1393,6 @@ function renderSetRow(ex,s,i){
   });
   card.querySelector('.set-card-rm').onclick=()=>{ ex.sets.splice(i,1); saveActiveWorkout(); render(); };
   return card;
-}
-let restTriggered = new Set();
-function maybeStartRest(ex,s){
-  if(s.weight!=='' && s.reps!=='' && s.weight!=null && s.reps!=null){
-    const key = ex.exerciseId+'_'+ex.sets.indexOf(s);
-    startRest(ex.restTime||settings.restDefault);
-  }
 }
 function startRest(seconds){
   clearInterval(restTimer.intervalId);
