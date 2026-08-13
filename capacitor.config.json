@@ -4,6 +4,10 @@
   "webDir": "www",
   "bundledWebRuntime": false,
   "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["google.com"]
+    },
     "SplashScreen": {
       "launchAutoHide": true,
       "launchShowDuration": 900,
@@ -29,3 +33,4 @@
     "webContentsDebuggingEnabled": true
   }
 }
+
