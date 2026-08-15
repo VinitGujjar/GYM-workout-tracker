@@ -1,134 +1,70 @@
 # GYM Workout Tracker
 
-A mobile-first personal gym workout tracker for planning workouts, logging exercises, tracking progress, and keeping workout history.
+**Free Android Workout Tracker**
 
-**Created by:** its_vinitgujjar
+A dark, modern, gym-focused workout tracker built for lifters who want serious tracking without the subscription paywalls.
 
-## What Is Included
+---
 
-- Existing production website in `index.html`
-- Capacitor Android wrapper
-- Android package ID: `com.itsvinitgujjar.gymworkouttracker`
-- Android app name: `GYM Workout Tracker`
-- Firebase Web SDK cloud sync preserved
-- Google Sign-In button and existing web auth code preserved
-- Existing favicon/logo reused for Android launcher and splash resources
+## Features
 
-## Install Dependencies
+- Workout tracking
+- Custom workout plans
+- Exercise library
+- Weight + reps tracking
+- Bodyweight exercise tracking
+- Timed exercises (Plank, Wall Sit, etc.)
+- Cardio tracking (Treadmill, Cycling, etc.)
+- Rest timer (floating, always accessible)
+- Workout history
+- Progress tracking with charts
+- Personal records / progress insights
+- Custom "Top Exercises" for your PR section
+- Water tracking
+- Daily water goal
+- Water history
+- Water reminders with custom intervals and sounds
+- Creatine hydration tracking
+- Firebase/Google account sync
+- Offline/local data storage
+- Dark modern gym-focused UI
+- Free to use
 
-Install Node.js first if it is not already installed.
+---
 
-```powershell
-cd "D:\Study\Gym Tracker"
-npm install
+## Download Android App
+
+**Latest APK:**
+https://github.com/VinitGujjar/GYM-workout-tracker/releases/latest
+
+The app is free to use.
+
+### About distribution
+
+This app is distributed through **GitHub Releases** rather than the Google Play Store.
+
+When a new version is released, the app checks GitHub automatically and will notify you inside the app with an **Update Now** button that opens the latest GitHub Release page. From there you can download and install the new APK directly.
+
+Since the app isn't from the Play Store, Android may ask you to **allow installation from this source** the first time you install or update — this is expected and safe for a self-distributed APK.
+
+---
+
+## Building from source
+
 ```
-
-## Sync Website Into Android
-
-`index.html` is the source of truth. After changing the website, run:
-
-```powershell
-npm run sync:web
+npm install
 npx cap sync android
 ```
 
-This copies the current web files into `www`, then Capacitor copies them into the Android project.
+Then build the debug/release APK from Android Studio, or via:
 
-## Open In Android Studio
-
-```powershell
-npx cap open android
 ```
-
-## Build Debug APK
-
-```powershell
 npm run android:debug
-```
-
-Output:
-
-```text
-android/app/build/outputs/apk/debug/app-debug.apk
-```
-
-## Install Debug APK On A Phone
-
-Enable USB debugging on the Android phone, connect it by USB, then run:
-
-```powershell
-adb install -r "android\app\build\outputs\apk\debug\app-debug.apk"
-```
-
-## Build Release APK
-
-Unsigned release APK:
-
-```powershell
 npm run android:release
 ```
 
-Output:
+---
 
-```text
-android/app/build/outputs/apk/release/app-release-unsigned.apk
-```
+## Contributing / Issues
 
-## Build Android App Bundle
-
-Unsigned release AAB:
-
-```powershell
-npm run android:aab
-```
-
-Output:
-
-```text
-android/app/build/outputs/bundle/release/app-release.aab
-```
-
-For Play Store release, create a signing key locally or in your CI secret store. Do not commit `.jks`, `.keystore`, passwords, or signing configs with secrets.
-
-## Firebase And Google Sign-In Setup
-
-The app still uses the same Firebase project configured in `index.html`.
-
-For Android Google Sign-In/Firebase Auth, add this Android app to Firebase:
-
-1. Open [Firebase Console](https://console.firebase.google.com/).
-2. Select the existing `gym-workout-tracker-c0955` project.
-3. Go to **Project settings**.
-4. In **Your apps**, click **Add app** and choose Android.
-5. Enter package name: `com.itsvinitgujjar.gymworkouttracker`.
-6. Enter app nickname: `GYM Workout Tracker`.
-7. Get your debug SHA-1:
-
-```powershell
-cd "D:\Study\Gym Tracker\android"
-.\gradlew signingReport
-```
-
-8. Copy the `SHA1` value for the `debug` variant into Firebase.
-9. Also add `SHA-256` when Firebase offers it.
-10. Download `google-services.json` if Firebase provides one and place it at:
-
-```text
-android/app/google-services.json
-```
-
-Do not commit private signing files or secrets.
-
-Important: the existing app currently uses Firebase Web SDK `signInWithPopup`. Popup OAuth can be unreliable or blocked inside Android WebView. If Google Sign-In fails in the Android app after the SHA-1/SHA-256 setup, the next step is to add a Capacitor-native Google auth plugin or use a browser-based OAuth flow. Do that as a targeted auth compatibility change only; the existing website sign-in should remain unchanged.
-
-## GitHub Actions
-
-The workflow at `.github/workflows/android-debug.yml` installs dependencies, syncs Capacitor, builds a debug APK, and uploads it as an artifact. It does not store signing secrets.
-
-## Website
-
-https://vinitgujjar.github.io/GYM-workout-tracker/
-
-## Version
-
-v1.0 - Initial public build with Capacitor Android packaging.
+This is a personal project actively developed by [@VinitGujjar](https://github.com/VinitGujjar). Feel free to open an issue if you run into a bug.

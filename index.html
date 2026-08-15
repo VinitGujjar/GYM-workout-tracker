@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>GYM Workout Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
 html{scroll-behavior:smooth;}
 body{
   background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
-  min-height:100vh; padding-bottom:calc(78px + env(safe-area-inset-bottom)); overflow-x:hidden;
+  min-height:100vh; padding-bottom:100px; overflow-x:hidden;
 }
 ::selection{background:var(--accent-dim);}
 button{font-family:inherit; cursor:pointer;}
@@ -35,8 +35,7 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
   position:sticky; top:0; z-index:40;
   background:rgba(16,18,21,0.92); backdrop-filter:blur(8px);
   border-bottom:1px solid var(--border);
-  padding:calc(14px + env(safe-area-inset-top)) 16px 14px;
-  display:flex; align-items:center; justify-content:space-between;
+  padding:calc(14px + env(safe-area-inset-top, 0px)) 16px 14px; display:flex; align-items:center; justify-content:space-between;
 }
 .brand{font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:2px; font-size:1.25rem;}
 .brand span{color:var(--accent);}
@@ -140,17 +139,33 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
 
 /* Bottom nav */
 .bottom-nav{
-  position:fixed; bottom:0; left:0; right:0; z-index:40;
-  background:rgba(16,18,21,0.96); backdrop-filter:blur(8px); border-top:1px solid var(--border);
-  display:flex; padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  position:fixed; left:14px; right:14px; bottom:calc(14px + env(safe-area-inset-bottom)); z-index:40;
+  background:rgba(22,24,28,0.72); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.09); border-radius:26px;
+  display:flex; padding:7px 6px; gap:2px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  transition:transform 0.38s cubic-bezier(.32,.72,0,1), opacity 0.3s ease;
 }
+.bottom-nav.nav-hidden{ transform:translateY(150%); opacity:0; pointer-events:none; }
 .nav-item{
-  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
-  background:none; border:none; color:var(--text-dim); padding:8px 2px; border-radius:8px; font-size:0.62rem;
-  text-transform:uppercase; letter-spacing:0.5px; font-family:'Oswald',sans-serif;
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+  background:none; border:none; color:var(--text-dim); padding:8px 2px; border-radius:18px; font-size:0.6rem;
+  text-transform:uppercase; letter-spacing:0.4px; font-family:'Oswald',sans-serif;
+  transition:background 0.25s ease, color 0.25s ease;
 }
-.nav-item .ni-icon{font-size:1.15rem;}
-.nav-item.active{color:var(--accent);}
+.nav-item .ni-icon{font-size:1.1rem;}
+.nav-item.active{color:var(--accent); background:rgba(255,90,46,0.14);}
+
+.more-row{
+  width:100%; display:flex; align-items:center; gap:14px; padding:14px 10px;
+  background:none; border:none; text-align:left; color:var(--text);
+}
+.more-row-icon{font-size:1.3rem; width:32px; text-align:center;}
+.more-row-txt{flex:1; display:flex; flex-direction:column; gap:2px;}
+.more-row-lbl{font-family:'Oswald',sans-serif; font-size:0.92rem;}
+.more-row-sub{font-size:0.72rem; color:var(--text-muted);}
+.more-row-chev{color:var(--text-dim); font-size:1.2rem;}
+.more-row-divider{height:1px; background:var(--border); margin:0 10px;}
 
 /* Day tabs (plan editor) */
 .day-tabs{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 14px; scrollbar-width:none;}
@@ -296,6 +311,48 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
 .plate-chip-sm{background:var(--gold-dim); color:var(--gold); border-radius:5px; padding:2px 7px; font-family:'JetBrains Mono',monospace; font-size:0.72rem;}
 .barbell-toggle-row{display:flex; align-items:center; justify-content:space-between; padding:8px 0;}
 
+.mg-chip{background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted); border-radius:20px; padding:8px 14px; font-size:0.78rem; font-family:'Oswald',sans-serif; letter-spacing:0.3px;}
+.mg-chip.active{background:var(--accent); color:var(--accent-text); border-color:var(--accent);}
+
+/* ---- Water tracking ---- */
+.water-hero{display:flex; flex-direction:column; align-items:center; padding:20px 0 6px;}
+.water-jar{width:170px; height:210px; position:relative; border-radius:36px 36px 66px 66px; overflow:hidden; background:var(--surface-2); border:3px solid var(--border); box-shadow:inset 0 0 24px rgba(0,0,0,0.35);}
+.water-fill{position:absolute; bottom:0; left:0; width:100%; background:linear-gradient(180deg,#5fd0ff,#0288d1); transition:height 0.7s cubic-bezier(.34,1.2,.4,1);}
+.water-wave{position:absolute; left:0; width:200%; height:18px;}
+.water-wave svg{display:block; width:50%; height:100%;}
+.water-wave.w1{top:-11px; fill:rgba(255,255,255,0.28); animation:waterWaveMove 3.6s linear infinite;}
+.water-wave.w2{top:-7px; fill:rgba(255,255,255,0.16); animation:waterWaveMove 5.4s linear infinite reverse;}
+@keyframes waterWaveMove{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+.water-jar-pct{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2; font-family:'Oswald',sans-serif; font-size:1.7rem; font-weight:700; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.55);}
+.water-summary{text-align:center; margin-top:14px;}
+.water-summary .ws-main{font-family:'JetBrains Mono',monospace; font-size:1.15rem; font-weight:700;}
+.water-summary .ws-sub{color:var(--text-muted); font-size:0.78rem; margin-top:3px;}
+.water-add-btn{width:100%; margin-top:16px; background:linear-gradient(135deg,#5fd0ff,#0288d1); color:#fff; border:none; border-radius:14px; padding:16px; font-family:'Oswald',sans-serif; font-size:1rem; letter-spacing:0.5px; text-transform:uppercase; font-weight:600; box-shadow:0 6px 18px rgba(2,136,209,0.35);}
+.water-add-btn:active{transform:scale(0.98);}
+.water-hist-row{display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--border);}
+.water-hist-row:last-child{border-bottom:none;}
+.water-day-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+.water-day-nav button{background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:8px; width:34px; height:34px; font-size:1rem;}
+.water-day-nav .wdn-label{font-family:'Oswald',sans-serif; font-size:0.85rem; color:var(--text-muted);}
+@keyframes waterDropPop{ 0%{ transform:scale(0.7); opacity:0; } 40%{ transform:scale(1.06); opacity:1; } 100%{ transform:scale(1); opacity:1; } }
+.water-add-toast{animation:waterDropPop 0.35s ease-out;}
+.cup-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:6px;}
+.cup-option{display:flex; flex-direction:column; align-items:center; gap:4px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:14px 6px 10px;}
+.cup-option:active{background:var(--surface-3);}
+.cup-icon{font-size:1.8rem; line-height:1; display:block; margin-bottom:2px;}
+.cup-v{font-family:'JetBrains Mono',monospace; font-size:0.78rem; font-weight:700;}
+.cup-lbl{color:var(--text-muted); font-size:0.62rem; text-transform:uppercase; letter-spacing:0.4px;}
+
+.timed-set-card{}
+.timed-set-body{padding:6px 0 4px; text-align:center;}
+.timed-display{font-family:'JetBrains Mono',monospace; font-size:2.2rem; font-weight:700; letter-spacing:1px; margin:6px 0 14px;}
+.timed-controls{display:flex; align-items:center; justify-content:center; gap:10px;}
+.timed-controls .stepper-btn{width:46px; height:44px; border-radius:10px; background:var(--surface-2); border:1px solid var(--border); color:var(--text);}
+.timed-startpause{background:var(--accent); color:var(--accent-text); border:none; border-radius:12px; padding:0 24px; height:48px; font-family:'Oswald',sans-serif; font-size:0.95rem; letter-spacing:0.5px; text-transform:uppercase; font-weight:600;}
+.timed-startpause:active{opacity:0.85;}
+.cardio-more-toggle{background:none; border:none; color:var(--accent); font-size:0.74rem; margin-top:12px; padding:4px 0; font-family:'Oswald',sans-serif; letter-spacing:0.3px;}
+.ex-equip-tag{display:inline-block; background:var(--surface-3); color:var(--text-muted); font-size:0.62rem; font-family:'Oswald',sans-serif; letter-spacing:0.3px; text-transform:uppercase; padding:2px 8px; border-radius:8px; vertical-align:middle; margin-left:4px;}
+
 .rest-ctrl-row{margin-top:14px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:12px 14px;}
 .rest-ctrl-lbl{font-size:0.62rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;}
 .rest-ctrl-inner{display:flex; align-items:center; gap:8px;}
@@ -307,15 +364,25 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
 
 .ex-notes{width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:10px 12px; border-radius:8px; font-size:0.82rem; margin-top:12px; resize:vertical; min-height:44px;}
 
-.rest-widget{
-  position:fixed; bottom:78px; left:0; right:0; z-index:50;
-  background:var(--accent); color:var(--accent-text); padding:14px 18px;
-  display:flex; align-items:center; justify-content:space-between; box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+.rest-fab{
+  position:fixed; right:16px; bottom:calc(94px + env(safe-area-inset-bottom)); z-index:55;
+  background:var(--accent); color:var(--accent-text); border:none; border-radius:999px;
+  padding:11px 18px; box-shadow:0 8px 24px rgba(255,90,46,0.42), 0 4px 14px rgba(0,0,0,0.35);
+  font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.05rem; text-align:center;
+  transition:transform 0.2s ease;
 }
-.rest-widget .rw-time{font-family:'JetBrains Mono',monospace; font-size:1.6rem; font-weight:700;}
-.rest-widget .rw-label{font-size:0.65rem; text-transform:uppercase; letter-spacing:1.5px; opacity:0.75;}
-.rest-widget .rw-actions{display:flex; gap:8px;}
-.rw-btn{background:rgba(0,0,0,0.18); border:none; color:var(--accent-text); padding:9px 13px; border-radius:8px; font-size:0.72rem; font-family:'Oswald',sans-serif; text-transform:uppercase; font-weight:600;}
+.rest-fab:active{ transform:scale(0.94); }
+.rest-fab .rf-label{ display:block; font-family:'Oswald',sans-serif; font-size:0.58rem; text-transform:uppercase; letter-spacing:1.2px; opacity:0.85; margin-bottom:1px; }
+.rest-popover{
+  position:fixed; right:16px; bottom:calc(150px + env(safe-area-inset-bottom)); z-index:56;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5); display:flex; gap:6px;
+  animation:restPopIn 0.18s ease-out;
+}
+@keyframes restPopIn{ from{opacity:0; transform:translateY(8px) scale(0.94);} to{opacity:1; transform:translateY(0) scale(1);} }
+.rest-popover .rw-btn{background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:9px 12px; border-radius:9px; font-size:0.7rem; font-family:'Oswald',sans-serif; text-transform:uppercase; font-weight:600; white-space:nowrap;}
+.ex-select-btn{width:100%; display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:11px 13px; border-radius:9px; font-size:0.9rem; margin-bottom:12px;}
+.pr-remove-btn{background:none; border:none; color:var(--text-dim); font-size:0.9rem; padding:2px;}
 
 /* Summary modal */
 .summary-hero{text-align:center; padding:8px 0 18px;}
@@ -444,29 +511,70 @@ h1,h2,h3{font-family:'Oswald',sans-serif; text-transform:uppercase;}
 /* ================= DATA ================= */
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const EXLIB = {
-  Chest:['Bench Press','Incline Bench Press','Dumbbell Bench Press','Incline Dumbbell Press','Machine Chest Press','Cable Fly','Pec Deck'],
-  Back:['Lat Pulldown','Pull-Ups','Seated Cable Row','Chest Supported Row','Barbell Row','Machine Row','Face Pull'],
-  Shoulders:['Shoulder Press','Dumbbell Shoulder Press','Machine Shoulder Press','Lateral Raise','Rear Delt Fly','Reverse Pec Deck'],
+  Chest:['Bench Press','Incline Bench Press','Decline Bench Press','Dumbbell Bench Press','Incline Dumbbell Press','Machine Chest Press','Cable Fly','Pec Deck','Push-Ups'],
+  Back:['Deadlift','Sumo Deadlift','Trap Bar Deadlift','Rack Pull','Lat Pulldown','Pull-Ups','Chin-Ups','Seated Cable Row','Chest Supported Row','Barbell Row','T-Bar Row','Single Arm Dumbbell Row','Machine Row','Face Pull'],
+  Shoulders:['Overhead Press','Shoulder Press','Dumbbell Shoulder Press','Machine Shoulder Press','Arnold Press','Lateral Raise','Front Raise','Rear Delt Fly','Reverse Pec Deck','Shrugs'],
   Biceps:['Dumbbell Curl','Barbell Curl','Hammer Curl','Preacher Curl','Cable Curl'],
-  Triceps:['Triceps Pushdown','Rope Pushdown','Overhead Cable Extension','Skull Crusher','Dumbbell Overhead Extension'],
-  Legs:['Squat','Leg Press','Leg Extension','Leg Curl','Romanian Deadlift','Calf Raise'],
-  Core:['Crunch','Cable Crunch','Hanging Leg Raise','Plank','Leg Raise'],
-  Cardio:['Treadmill','Stationary Bike','Rowing Machine','Stair Climber','Elliptical'],
+  Triceps:['Triceps Pushdown','Rope Pushdown','Overhead Cable Extension','Skull Crusher','Dumbbell Overhead Extension','Dips'],
+  Legs:['Squat','Front Squat','Hack Squat','Leg Press','Bulgarian Split Squat','Leg Extension','Leg Curl','Romanian Deadlift','Stiff Leg Deadlift','Calf Raise','Bodyweight Squat','Lunges'],
+  Core:['Crunch','Cable Crunch','Hanging Leg Raise','Plank','Leg Raise','Side Plank','Wall Sit','Hollow Body Hold','L-Sit','Ab Wheel Rollout'],
+  Cardio:['Treadmill','Stationary Bike','Rowing Machine','Stair Climber','Elliptical','Outdoor Running','Walking','Cycling'],
   Other:[]
 };
 
-let settings = {name:'', weightUnit:'kg', restDefault:90, sound:true, vibration:true, setupDone:false, barWeight:20, plateSizes:[25,20,15,10,5,2.5,1.25], weightIncrement:2.5, calorieTarget:2200, proteinTarget:150};
+/* ---- Exercise Type / Tracking Mode system ----
+   Every exercise's *logging UI* is driven by a trackingMode:
+   - 'weight_reps' (default): Weight + Reps          — Bench Press, Squat, Lat Pulldown...
+   - 'bodyweight'            : Reps + optional Added Weight — Push-Ups, Pull-Ups, Dips...
+   - 'timed'                 : Duration only (live timer)   — Plank, Wall Sit, Dead Hang...
+   - 'cardio'                : Duration + Distance (+ optional Speed/Incline) — Treadmill, Cycling...
+   Existing plan/workout data that predates this system has no `trackingMode` field —
+   inferTrackingMode() gives it a sensible default so nothing old ever breaks. */
+const TRACKING_MODES = {
+  weight_reps: 'Weight + Reps',
+  bodyweight: 'Bodyweight (Reps)',
+  timed: 'Timed (Duration)',
+  cardio: 'Cardio (Duration + Distance)'
+};
+const TIMED_EXERCISE_NAMES = ['plank','side plank','wall sit','hollow body hold','dead hang','l-sit','isometric hold'];
+const BODYWEIGHT_EXERCISE_NAMES = ['push-ups','push-up','pull-ups','pull-up','chin-ups','chin-up','dips','dip','bodyweight squat','lunges','ab wheel rollout'];
+function inferTrackingMode(name, muscleGroup){
+  const n=(name||'').trim().toLowerCase();
+  if(TIMED_EXERCISE_NAMES.includes(n)) return 'timed';
+  if(BODYWEIGHT_EXERCISE_NAMES.includes(n)) return 'bodyweight';
+  if((muscleGroup||'')==='Cardio') return 'cardio';
+  return 'weight_reps';
+}
+function getExerciseTracking(ex){
+  return ex.trackingMode || inferTrackingMode(ex.name, ex.muscleGroup);
+}
+function fmtMMSS(totalSec){
+  totalSec = Math.max(0, Math.round(totalSec||0));
+  const m = Math.floor(totalSec/60), s = totalSec%60;
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+let settings = {name:'', weightUnit:'kg', restDefault:90, sound:true, soundIntensity:'normal', vibration:true, setupDone:false, barWeight:20, plateSizes:[25,20,15,10,5,2.5,1.25], weightIncrement:2.5, calorieTarget:2200, proteinTarget:150};
 let plan = {}; // { Monday:{name,isRest,exercises:[{id,name,muscleGroup,sets,reps,rest,notes,warmup,isBarbell,supersetGroup}]}, ... }
 let workouts = []; // completed workouts
 let activeWorkout = null;
 let bodymetrics = {bodyweight:[], measurements:[]};
 let progressPhotos = []; // [{id,date,note,weight,bodyFat,dataUrl}] — LOCAL ONLY, not cloud-synced
 let dietLog = {}; // { 'YYYY-MM-DD': [{id,name,calories,protein,qty}] }
+let water = {
+  entries: [], // [{id, amount, timestamp, date}]
+  goalMl: 3000,
+  servingMl: 300,
+  takesCreatine: false,
+  reminders: { enabled:false, intervalMin:60, startTime:'08:00', endTime:'22:00', sound:'drop' }
+};
+let waterHistoryDate = null; // ISO date currently viewed in Water tab history (null = today)
 
 let view = 'dashboard';
 let expandedExId = null; // in workout screen
 let planActiveDay = DAYS[0];
 let progressSelectedExercise = null;
+let favoriteExerciseIds = []; // persisted — user-picked "Top Exercises" for the PR card. Empty = show all (default, matches old behavior).
 let progressRange = 'all';
 let progressMetric = 'weight'; // weight | 1rm
 let historySearch = '';
@@ -614,6 +722,110 @@ function calcPlates(targetWeight){
   return {combo, achieved, exact: Math.abs(achieved-targetWeight)<0.01};
 }
 
+/* ================= APP VERSION / GITHUB RELEASE UPDATE CHECK ================= */
+// Bump this on every release. Keep in sync with android/app/build.gradle versionName.
+const APP_VERSION = '2.0.0';
+const GITHUB_REPO = 'VinitGujjar/GYM-workout-tracker';
+const GITHUB_RELEASES_API = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
+const GITHUB_RELEASES_PAGE = `https://github.com/${GITHUB_REPO}/releases/latest`;
+const UPDATE_CHECK_INTERVAL_MS = 6*60*60*1000; // 6 hours
+let updateCheckedThisSession = false;
+
+function compareVersions(a, b){
+  // returns -1 if a<b, 0 if equal, 1 if a>b — proper major.minor.patch comparison (not string compare)
+  const pa = String(a||'0').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
+  const pb = String(b||'0').replace(/^v/i,'').split('.').map(n=>parseInt(n,10)||0);
+  for(let i=0;i<Math.max(pa.length,pb.length);i++){
+    const x=pa[i]||0, y=pb[i]||0;
+    if(x<y) return -1;
+    if(x>y) return 1;
+  }
+  return 0;
+}
+function findApkAsset(assets){
+  if(!Array.isArray(assets)) return null;
+  const apks = assets.filter(a=> a.name && a.name.toLowerCase().endsWith('.apk'));
+  if(!apks.length) return null;
+  // prefer the most recently updated APK asset if multiple exist
+  apks.sort((x,y)=> new Date(y.updated_at||0) - new Date(x.updated_at||0));
+  return apks[0];
+}
+/**
+ * Checks GitHub Releases for a newer version.
+ * force=true bypasses the 6-hour cache and the once-per-session guard (used by the manual
+ * Settings button); force=false is used for the silent startup check.
+ * Never throws — always resolves to a result object so callers can render UI safely.
+ */
+async function checkForUpdates(force){
+  if(!force){
+    if(updateCheckedThisSession) return {status:'skipped'};
+    const lastCheck = Number(lsGet('lastUpdateCheck')||0);
+    if(Date.now()-lastCheck < UPDATE_CHECK_INTERVAL_MS) return {status:'skipped'};
+  }
+  if(typeof navigator!=='undefined' && navigator.onLine===false){
+    return {status:'offline'};
+  }
+  updateCheckedThisSession = true;
+  lsSet('lastUpdateCheck', String(Date.now()));
+  try{
+    const res = await fetch(GITHUB_RELEASES_API, { headers:{ 'Accept':'application/vnd.github+json' } });
+    if(!res.ok) return {status:'error'};
+    const data = await res.json();
+    if(!data || !data.tag_name) return {status:'error'};
+    const latestVersion = String(data.tag_name).replace(/^v/i,'');
+    const isNewer = compareVersions(latestVersion, APP_VERSION) > 0;
+    if(!isNewer) return {status:'up-to-date', latestVersion};
+    const apk = findApkAsset(data.assets);
+    return {
+      status: 'update-available',
+      latestVersion,
+      releaseUrl: data.html_url || GITHUB_RELEASES_PAGE,
+      releaseNotes: data.body || '',
+      hasApk: !!apk,
+    };
+  }catch(e){
+    return {status:'error'};
+  }
+}
+function parseReleaseNotesLines(body){
+  // Escape first (never inject raw GitHub markdown/HTML), then take up to 6 bullet-ish lines for a short preview.
+  const safe = escapeHtml(body||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  return safe.slice(0,6);
+}
+function openUpdateModal(result){
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay center';
+  const modal=document.createElement('div');
+  modal.className='modal';
+  const notesLines = parseReleaseNotesLines(result.releaseNotes);
+  modal.innerHTML=`<div class="modal-head"><div class="modal-title">🚀 Update Available</div><button class="modal-close">✕</button></div>
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="font-family:'Oswald',sans-serif; font-size:1.05rem;">GYM Workout Tracker v${escapeHtml(result.latestVersion)} is available</div>
+      <div style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">You're using v${escapeHtml(APP_VERSION)}</div>
+    </div>
+    ${notesLines.length?`<div class="card" style="background:var(--surface-2); margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:8px;">What's new</div>
+      ${notesLines.map(l=>`<div style="font-size:0.82rem; color:var(--text-muted); padding:3px 0;">• ${l.replace(/^[-*•]\s*/,'')}</div>`).join('')}
+    </div>`:''}
+    ${!result.hasApk?`<div style="font-size:0.76rem; color:var(--text-dim); margin-bottom:12px;">Update found, but the APK isn't attached to this release yet — try again shortly.</div>`:`<div style="font-size:0.72rem; color:var(--text-dim); margin-bottom:14px;">Download the latest APK from GitHub Releases. Android may ask you to allow installation from this source.</div>`}
+    <div style="display:flex; gap:10px;">
+      <button class="btn" id="updateLaterBtn" style="flex:1;">Later</button>
+      <button class="btn btn-primary" id="updateNowBtn" style="flex:1;">Update Now</button>
+    </div>`;
+  overlay.appendChild(modal);
+  document.getElementById('modalRoot').appendChild(overlay);
+  overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
+  overlay.querySelector('#updateLaterBtn').onclick=()=>overlay.remove();
+  overlay.querySelector('#updateNowBtn').onclick=()=>{
+    window.open(result.releaseUrl || GITHUB_RELEASES_PAGE, '_blank');
+    overlay.remove();
+  };
+}
+async function runStartupUpdateCheck(){
+  const result = await checkForUpdates(false);
+  if(result.status==='update-available') openUpdateModal(result);
+}
+
 /* ================= STORAGE (localStorage — persists on this device/browser) ================= */
 const LS_PREFIX = 'ironlog:';
 function lsGet(key){ try{ const v=localStorage.getItem(LS_PREFIX+key); return v==null?null:v; }catch(e){ return null; } }
@@ -629,6 +841,9 @@ async function loadAll(){
   try{ const r=lsGet('bodymetrics'); if(r) bodymetrics=JSON.parse(r); }catch(e){}
   try{ const r=lsGet('progressPhotos'); if(r) progressPhotos=JSON.parse(r); }catch(e){ progressPhotos=[]; }
   try{ const r=lsGet('dietLog'); if(r) dietLog=JSON.parse(r); }catch(e){ dietLog={}; }
+  try{ const r=lsGet('water'); if(r) water=Object.assign(water, JSON.parse(r)); }catch(e){}
+  try{ const r=lsGet('favoriteExercises'); if(r) favoriteExerciseIds=JSON.parse(r); }catch(e){ favoriteExerciseIds=[]; }
+  if(!water.reminders) water.reminders={ enabled:false, intervalMin:60, startTime:'08:00', endTime:'22:00', sound:'drop' };
   if(!settings.setupDone){ view='onboarding'; }
   boot();
   hideSplashScreen();
@@ -651,6 +866,8 @@ async function saveActiveWorkout(){ if(activeWorkout){ lsSet('activeWorkout', JS
 async function saveBodymetrics(){ lsSet('bodymetrics', JSON.stringify(bodymetrics)); scheduleCloudPush(); }
 async function saveProgressPhotos(){ if(!lsSet('progressPhotos', JSON.stringify(progressPhotos))) showToast('Photo storage full — try deleting an old photo'); }
 async function saveDietLog(){ lsSet('dietLog', JSON.stringify(dietLog)); scheduleCloudPush(); }
+async function saveWater(){ lsSet('water', JSON.stringify(water)); scheduleCloudPush(); }
+async function saveFavoriteExercises(){ lsSet('favoriteExercises', JSON.stringify(favoriteExerciseIds)); scheduleCloudPush(); }
 
 /* ================= CLOUD SYNC (Firebase + Google Sign-in) ================= */
 const firebaseConfig = {
@@ -668,6 +885,86 @@ let currentUser = null;
 let syncConnected = false;
 let syncPushTimer = null;
 let syncStatus = 'off'; // off | connecting | synced | error
+
+function isNativeApp(){
+  return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+}
+function nativeAuthPlugin(){
+  return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.FirebaseAuthentication) || null;
+}
+function nativeHapticsPlugin(){
+  return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) || null;
+}
+
+/* ---- Vibration: prefer native Capacitor Haptics (reliable in WebView), fall back to navigator.vibrate ---- */
+function doVibrate(pattern){
+  // pattern: 'light' | 'medium' | 'heavy' | array of ms durations (web fallback)
+  if(!settings.vibration) return;
+  const haptics = nativeHapticsPlugin();
+  if(haptics){
+    try{
+      if(pattern==='light') haptics.impact({style:'LIGHT'});
+      else if(pattern==='heavy') haptics.impact({style:'HEAVY'});
+      else haptics.impact({style:'MEDIUM'});
+      return;
+    }catch(e){ /* fall through to web vibrate */ }
+  }
+  if(navigator.vibrate){
+    try{
+      if(pattern==='light') navigator.vibrate(40);
+      else if(pattern==='heavy') navigator.vibrate([250,100,250]);
+      else navigator.vibrate([200,100,200]);
+    }catch(e){}
+  }
+}
+
+/* ---- Sound: richer, louder, ducking-safe completion chime ---- */
+let sharedAudioCtx = null;
+function getAudioCtx(){
+  try{
+    if(!sharedAudioCtx || sharedAudioCtx.state==='closed'){
+      sharedAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    }
+    if(sharedAudioCtx.state==='suspended') sharedAudioCtx.resume();
+    return sharedAudioCtx;
+  }catch(e){ return null; }
+}
+function soundGainForIntensity(){
+  const map = {soft:0.22, normal:0.38, strong:0.55};
+  return map[settings.soundIntensity] || map.normal;
+}
+// Plays a short pleasant ascending 3-note chime through a limiter so it stays loud but clean (no distortion),
+// and never touches other apps' audio focus/volume (Web Audio just mixes into the media stream).
+function playChime(notes){
+  const ctx = getAudioCtx();
+  if(!ctx) return;
+  const peakGain = soundGainForIntensity();
+  const limiter = ctx.createDynamicsCompressor();
+  limiter.threshold.value = -8; limiter.knee.value = 6; limiter.ratio.value = 12;
+  limiter.attack.value = 0.003; limiter.release.value = 0.15;
+  limiter.connect(ctx.destination);
+  let t = ctx.currentTime;
+  notes.forEach((freq,i)=>{
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    o.connect(g); g.connect(limiter);
+    const start = t + i*0.12;
+    const dur = 0.32;
+    g.gain.setValueAtTime(0, start);
+    g.gain.linearRampToValueAtTime(peakGain, start+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, start+dur);
+    o.start(start); o.stop(start+dur+0.02);
+  });
+}
+function playBeep(){ // rest complete — short 2-note chime
+  try{ playChime([880,1175]); }catch(e){}
+}
+function playCompletionSound(){ // full workout complete — fuller 3-note fanfare, more noticeable
+  try{ playChime([660,880,1320]); }catch(e){}
+}
+
 
 function initFirebase(){
   try{
@@ -688,6 +985,12 @@ function initFirebase(){
       }
       if(typeof render === 'function') render();
     });
+
+    // Handle browsers that fall back to redirect-based Google sign-in
+    // (e.g. mobile browsers where the popup gets blocked).
+    auth.getRedirectResult().catch(e=>{
+      if(e && e.code && e.code!=='auth/no-auth-event') console.error('Redirect sign-in error:', e);
+    });
   }catch(e){
     syncStatus='error';
     syncConnected=false;
@@ -696,7 +999,7 @@ function initFirebase(){
 }
 
 function bundleData(){
-  return { settings, plan, workouts, activeWorkout, bodymetrics, dietLog, updatedAt: Date.now() };
+  return { settings, plan, workouts, activeWorkout, bodymetrics, dietLog, water, favoriteExerciseIds, updatedAt: Date.now() };
 }
 
 function applyBundle(b){
@@ -707,12 +1010,17 @@ function applyBundle(b){
   if('activeWorkout' in b) activeWorkout = b.activeWorkout;
   if(b.bodymetrics) bodymetrics = b.bodymetrics;
   if(b.dietLog) dietLog = b.dietLog;
+  if(b.water) water = Object.assign(water, b.water);
+  if(!water.reminders) water.reminders={ enabled:false, intervalMin:60, startTime:'08:00', endTime:'22:00', sound:'drop' };
+  if(Array.isArray(b.favoriteExerciseIds)) favoriteExerciseIds = b.favoriteExerciseIds;
   lsSet('settings', JSON.stringify(settings));
   lsSet('plan', JSON.stringify(plan));
   lsSet('workouts', JSON.stringify(workouts));
   if(activeWorkout) lsSet('activeWorkout', JSON.stringify(activeWorkout)); else lsDelete('activeWorkout');
   lsSet('bodymetrics', JSON.stringify(bodymetrics));
   lsSet('dietLog', JSON.stringify(dietLog));
+  lsSet('water', JSON.stringify(water));
+  lsSet('favoriteExercises', JSON.stringify(favoriteExerciseIds));
   // NOTE: progressPhotos intentionally excluded from cloud sync — stays local-only
   // to avoid exceeding Firestore's ~1MB document size limit and breaking sync.
 }
@@ -753,12 +1061,17 @@ async function connectSync(){
   }
 }
 
+function activeDocRef(){
+  if(manualSyncActive) return manualDocRef();
+  return userDocRef();
+}
 function scheduleCloudPush(){
-  if(!syncConnected || !syncDb || !currentUser) return;
+  if(!syncConnected || !syncDb) return;
+  if(!currentUser && !manualSyncActive) return;
   clearTimeout(syncPushTimer);
   syncPushTimer=setTimeout(async()=>{
     try{
-      const docRef=userDocRef();
+      const docRef=activeDocRef();
       if(!docRef) return;
       await docRef.set(bundleData());
       syncStatus='synced';
@@ -770,9 +1083,10 @@ function scheduleCloudPush(){
 }
 
 async function pullCloudNow(){
-  if(!syncConnected || !syncDb || !currentUser) return {ok:false,msg:'Not signed in.'};
+  if(!syncConnected || !syncDb || (!currentUser && !manualSyncActive)) return {ok:false,msg:'Not connected.'};
   try{
-    const snap=await userDocRef().get();
+    const docRef=activeDocRef();
+    const snap=await docRef.get();
     if(snap.exists) applyBundle(snap.data());
     syncStatus='synced';
     return {ok:true};
@@ -782,22 +1096,146 @@ async function pullCloudNow(){
   }
 }
 
+function sanitizeErrorMessage(msg){
+  if(!msg) return msg;
+  // Strip anything that looks like a JWT (three dot-separated base64url segments)
+  // or a long token, so raw credentials never end up visible to the user.
+  return String(msg).replace(/[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{10,}/g, '[hidden token]')
+                     .replace(/id_token=[^&\s]+/g, 'id_token=[hidden]');
+}
+
 async function signInWithGoogle(){
   try{
     if(!auth) initFirebase();
-    const provider=new firebase.auth.GoogleAuthProvider();
-    await auth.signInWithPopup(provider);
+
+    if(isNativeApp()){
+      const plugin = nativeAuthPlugin();
+      if(!plugin){
+        showToast('Native Google Sign-In plugin not found. Rebuild the app after installing @capacitor-firebase/authentication.');
+        return;
+      }
+      // Step 1: trigger native Google sign-in — this establishes a native Google/Firebase session
+      // and returns a result containing the Google OAuth credential.
+      // useCredentialManager:false avoids "No credentials available" on devices/emulators
+      // without a Credential Manager-registered Google account.
+      const result = await plugin.signInWithGoogle({ useCredentialManager: false });
+      console.log('Native signInWithGoogle result shape — top-level keys:', result ? Object.keys(result) : null, '| credential keys:', (result && result.credential) ? Object.keys(result.credential) : null);
+
+      // Step 2: pull the Google OAuth ID token out of the result. IMPORTANT — this must be
+      // result.credential.idToken (the Google OAuth ID token), NOT plugin.getIdToken()
+      // (which returns a Firebase Auth ID token — a different, incompatible token that
+      // GoogleAuthProvider.credential() will reject with auth/invalid-credential).
+      const googleIdToken = result && result.credential && result.credential.idToken;
+      if(!googleIdToken){
+        throw new Error('Google sign-in succeeded, but no Google ID token was returned.');
+      }
+
+      // Step 3: bridge that native session into the Web Firebase SDK, so auth.currentUser
+      // and onAuthStateChanged (and the rest of the app's existing sync logic) pick it up.
+      try{
+        await auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(googleIdToken));
+        console.log('Web Firebase user bridged, uid:', auth.currentUser && auth.currentUser.uid);
+      }catch(bridgeErr){
+        // Log the real error code/message for debugging via chrome://inspect — never guess
+        // the cause in the user-facing message, since it can be wrong and mislead debugging.
+        console.error('signInWithCredential failed. code:', bridgeErr.code, 'message:', bridgeErr.message);
+        throw new Error('Google sign-in failed to complete (' + (bridgeErr.code || 'unknown error') + '). Check chrome://inspect logs for details.');
+      }
+    }else{
+      const provider=new firebase.auth.GoogleAuthProvider();
+      try{
+        await auth.signInWithPopup(provider);
+      }catch(popupErr){
+        if(popupErr.code==='auth/popup-blocked' || popupErr.code==='auth/cancelled-popup-request' || popupErr.code==='auth/popup-closed-by-user'){
+          await auth.signInWithRedirect(provider);
+        }else{
+          throw popupErr;
+        }
+      }
+    }
   }catch(e){
     console.error('Google sign-in error:',e);
-    showToast(e.message||'Google sign-in failed.');
+    showToast(sanitizeErrorMessage(e.message)||'Google sign-in failed.');
   }
 }
 
 async function signOutGoogle(){
   try{
-    await auth.signOut();
+    if(isNativeApp()){
+      const plugin = nativeAuthPlugin();
+      if(plugin && plugin.signOut){
+        try{ await plugin.signOut(); }catch(e){ console.error('Native sign-out error:', e); }
+      }
+    }
+    await auth.signOut(); // clears the bridged Web Firebase SDK session too
   }catch(e){
     showToast(e.message||'Sign out failed.');
+  }
+}
+
+/* ---- Manual Sync Code fallback (works inside WebView-wrapped apps where Google
+   popup/redirect sign-in is blocked). Uses anonymous auth + a shared code as the
+   document key, instead of a real Google identity. ---- */
+let manualSyncCode = null;
+let manualSyncActive = false;
+
+function manualDocRef(){
+  if(!syncDb || !manualSyncCode) return null;
+  return syncDb.collection('manual_sync').doc(manualSyncCode);
+}
+
+async function connectSyncCode(code){
+  try{
+    code = (code||'').trim();
+    if(!code) return {ok:false, msg:'Enter a code first.'};
+    if(!window.firebase) throw new Error('Firebase SDK failed to load.');
+    if(!firebase.apps || !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    syncDb = firebase.firestore();
+    auth = firebase.auth();
+    if(!auth.currentUser){
+      try{
+        await auth.signInAnonymously();
+      }catch(authErr){
+        if(authErr.code==='auth/admin-restricted-operation'){
+          return {ok:false, msg:'Anonymous sign-in is disabled in Firebase Console. Enable it under Authentication → Sign-in method → Anonymous, then try again.'};
+        }
+        throw authErr;
+      }
+    }
+    manualSyncCode = code;
+    lsSet('manualSyncCode', code);
+    syncStatus='connecting';
+    const docRef = manualDocRef();
+    const snap = await docRef.get();
+    const localBundle = bundleData();
+    if(snap.exists){
+      const remote = snap.data();
+      if((remote.updatedAt||0) > (localBundle.updatedAt||0)){
+        applyBundle(remote);
+      }else{
+        await docRef.set(localBundle);
+      }
+    }else{
+      await docRef.set(localBundle);
+    }
+    manualSyncActive = true;
+    syncConnected = true;
+    syncStatus = 'synced';
+    return {ok:true};
+  }catch(e){
+    syncStatus='error';
+    return {ok:false, msg:e.message||'Could not connect with this code.'};
+  }
+}
+async function disconnectSyncCode(){
+  manualSyncCode=null; manualSyncActive=false; syncConnected=false; syncStatus='off';
+  lsDelete('manualSyncCode');
+}
+async function tryAutoConnectSyncCode(){
+  const saved = lsGet('manualSyncCode');
+  if(saved){
+    const r = await connectSyncCode(saved);
+    if(r.ok && typeof render==='function') render();
   }
 }
 
@@ -810,6 +1248,20 @@ function historyForExercise(exId, excludeWorkoutId){
     (w.exercises||[]).forEach(e=>{
       if(e.exerciseId===exId){
         const working=(e.sets||[]).filter(s=>s.type!=='warmup' && s.weight!=='' && s.reps!=='' && s.weight!=null && s.reps!=null);
+        if(working.length) rows.push({date:w.date, sets:working, workoutId:w.id});
+      }
+    });
+  });
+  return rows;
+}
+function historyForExerciseDuration(exId, excludeWorkoutId){
+  // for 'timed'/'cardio' tracking modes — sets identified by durationSec instead of weight/reps
+  const rows=[];
+  pastWorkoutsSorted().forEach(w=>{
+    if(w.id===excludeWorkoutId) return;
+    (w.exercises||[]).forEach(e=>{
+      if(e.exerciseId===exId){
+        const working=(e.sets||[]).filter(s=>s.type!=='warmup' && Number(s.durationSec)>0);
         if(working.length) rows.push({date:w.date, sets:working, workoutId:w.id});
       }
     });
@@ -840,7 +1292,7 @@ function workoutTotalReps(w){ return (w.exercises||[]).reduce((s,e)=> s+(e.sets|
 function allExercisesWithHistory(){
   const map={};
   workouts.forEach(w=> (w.exercises||[]).forEach(e=>{
-    if(!map[e.exerciseId]) map[e.exerciseId]={id:e.exerciseId, name:e.name};
+    if(!map[e.exerciseId]) map[e.exerciseId]={id:e.exerciseId, name:e.name, trackingMode:getExerciseTracking(e)};
   }));
   return Object.values(map);
 }
@@ -860,12 +1312,47 @@ function computeStreak(){
   }
   return streak;
 }
+function computeBestStreak(){
+  if(!workouts.length) return 0;
+  const doneDates = new Set(workouts.map(w=>w.date));
+  const firstDate = workouts.reduce((min,w)=> w.date<min?w.date:min, workouts[0].date);
+  let d = new Date(firstDate+'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  let cur=0, best=0;
+  let guard=0;
+  while(d<=today && guard<3660){
+    guard++;
+    const iso = d.toISOString().slice(0,10);
+    const dayName = d.toLocaleDateString('en-US',{weekday:'long'});
+    const isRest = plan[dayName] && plan[dayName].isRest;
+    if(doneDates.has(iso)){ cur++; if(cur>best) best=cur; }
+    else if(isRest){ /* skip, streak continues */ }
+    else if(iso===todayISO()){ /* today not done yet, don't break */ }
+    else { cur=0; }
+    d.setDate(d.getDate()+1);
+  }
+  return Math.max(best, computeStreak());
+}
+function allTimeStats(){
+  const totalWorkouts = workouts.length;
+  const totalSets = workouts.reduce((s,w)=>s+workoutWorkingSets(w),0);
+  const totalReps = workouts.reduce((s,w)=>s+workoutTotalReps(w),0);
+  const totalVolume = workouts.reduce((s,w)=>s+workoutVolume(w),0);
+  let weeklyFreq = 0;
+  if(totalWorkouts){
+    const dates = workouts.map(w=>new Date(w.date+'T00:00:00').getTime());
+    const minD = Math.min(...dates);
+    const weeks = Math.max(1, (Date.now()-minD)/(7*24*3600*1000));
+    weeklyFreq = totalWorkouts/weeks;
+  }
+  return {totalWorkouts, totalSets, totalReps, totalVolume, weeklyFreq, currentStreak:computeStreak(), bestStreak:computeBestStreak()};
+}
 
 /* ================= INIT / ROUTER ================= */
 function boot(){
   render();
 }
-function navigate(v){ view=v; expandedExId=null; render(); window.scrollTo(0,0); }
+function navigate(v){ if(v!=='workout') stopLiveSetTimer(); view=v; expandedExId=null; render(); window.scrollTo(0,0); }
 
 document.getElementById('settingsBtn').onclick = ()=> navigate('settings');
 
@@ -881,9 +1368,11 @@ function render(){
   if(view==='dashboard') renderDashboard(app);
   else if(view==='plan') renderPlan(app);
   else if(view==='progress') renderProgress(app);
+  else if(view==='water') renderWater(app);
   else if(view==='history') renderHistory(app);
   else if(view==='diet') renderDiet(app);
   else if(view==='settings') renderSettings(app);
+  else if(view==='more') renderMore(app);
   else renderDashboard(app);
   renderBottomNav();
   renderRestWidget();
@@ -917,17 +1406,53 @@ function renderBottomNav(){
     {id:'dashboard', icon:'🏠', label:'Home'},
     {id:'plan', icon:'📅', label:'Plan'},
     {id:'progress', icon:'📈', label:'Progress'},
-    {id:'history', icon:'📜', label:'History'},
-    {id:'diet', icon:'🍽️', label:'Diet'},
+    {id:'water', icon:'💧', label:'Water'},
+    {id:'more', icon:'☰', label:'More'},
   ];
+  const secondaryViews = ['more','history','diet','settings'];
   nav.innerHTML='';
   items.forEach(it=>{
+    const isActive = it.id==='more' ? secondaryViews.includes(view) : view===it.id;
     const b=document.createElement('button');
-    b.className='nav-item'+((view===it.id)?' active':'');
+    b.className='nav-item'+(isActive?' active':'');
     b.innerHTML=`<span class="ni-icon">${it.icon}</span><span>${it.label}</span>`;
     b.onclick=()=>navigate(it.id);
     nav.appendChild(b);
   });
+}
+let lastScrollY=0;
+window.addEventListener('scroll', ()=>{
+  const nav=document.getElementById('bottomNav');
+  if(!nav || view==='onboarding') return;
+  const cur=window.scrollY;
+  const delta=cur-lastScrollY;
+  if(Math.abs(delta)<8) return;
+  if(delta>0 && cur>80) nav.classList.add('nav-hidden');
+  else nav.classList.remove('nav-hidden');
+  lastScrollY=cur;
+}, {passive:true});
+
+/* ================= MORE (secondary nav) ================= */
+function renderMore(app){
+  const items=[
+    {id:'history', icon:'📜', label:'History', sub:'Past workouts & session details'},
+    {id:'diet', icon:'🍽️', label:'Diet', sub:'Calories & protein log'},
+    {id:'settings', icon:'⚙️', label:'Settings', sub:'Preferences, units, account, sync'},
+  ];
+  const wrap=document.createElement('div');
+  wrap.className='card';
+  wrap.style.padding='6px';
+  items.forEach((it,idx)=>{
+    const row=document.createElement('button');
+    row.className='more-row';
+    row.innerHTML=`<span class="more-row-icon">${it.icon}</span>
+      <span class="more-row-txt"><span class="more-row-lbl">${it.label}</span><span class="more-row-sub">${it.sub}</span></span>
+      <span class="more-row-chev">›</span>`;
+    row.onclick=()=>navigate(it.id);
+    wrap.appendChild(row);
+    if(idx<items.length-1){ const hr=document.createElement('div'); hr.className='more-row-divider'; wrap.appendChild(hr); }
+  });
+  app.appendChild(wrap);
 }
 
 /* ================= ONBOARDING ================= */
@@ -1047,6 +1572,9 @@ function renderDashboard(app){
   if(last){
     const lc=document.createElement('div');
     lc.className='card';
+    lc.style.cursor='pointer';
+    lc.setAttribute('role','button');
+    lc.setAttribute('tabindex','0');
     lc.innerHTML=`<div class="card-title">Last Workout</div>
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -1057,6 +1585,12 @@ function renderDashboard(app){
           ${workoutWorkingSets(last)} sets<br>${Math.round(workoutVolume(last)).toLocaleString()} ${wu()}
         </div>
       </div>`;
+    const openLast=()=> openWorkoutDetail(last);
+    lc.onclick=openLast;
+    lc.onkeydown=(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openLast(); } };
+    lc.addEventListener('pointerdown',()=> lc.style.opacity='0.7');
+    lc.addEventListener('pointerup',()=> lc.style.opacity='1');
+    lc.addEventListener('pointerleave',()=> lc.style.opacity='1');
     app.appendChild(lc);
   }
 
@@ -1086,17 +1620,24 @@ function getWeekWorkouts(offsetWeeks){
 }
 
 /* ================= START / END WORKOUT ================= */
+function makeEmptySetForMode(mode, prevSet){
+  if(mode==='timed') return {type:'working', durationSec:0};
+  if(mode==='cardio') return {type:'working', durationSec:0, distanceKm:''};
+  if(mode==='bodyweight') return {type:'working', weight: prevSet?prevSet.weight:0, reps:''};
+  return {type:'working', weight: prevSet?prevSet.weight:'', reps:'', rir:''};
+}
 function startWorkout(dayName){
   const dp=plan[dayName];
   const exercises = dp.exercises.map(e=>{
+    const mode = getExerciseTracking(e);
     const hist = historyForExercise(e.id, null);
     const prevSets = hist[0] ? hist[0].sets : [];
     const sets=[];
     for(let i=0;i<(e.sets||3);i++){
       const src = prevSets[i] || prevSets[prevSets.length-1] || null;
-      sets.push({type:'working', weight: src?src.weight:'', reps:'', rir:''});
+      sets.push(makeEmptySetForMode(mode, src));
     }
-    return {exerciseId:e.id, name:e.name, muscleGroup:e.muscleGroup||'', restTime:e.rest||settings.restDefault, isBarbell:!!e.isBarbell, supersetGroup:e.supersetGroup||null, notes:'', sets};
+    return {exerciseId:e.id, name:e.name, muscleGroup:e.muscleGroup||'', trackingMode:mode, equipment:e.equipment||'', restTime:e.rest||settings.restDefault, isBarbell:!!e.isBarbell, supersetGroup:e.supersetGroup||null, notes:'', sets};
   });
   activeWorkout = {
     id: uid(), date: todayISO(), dayName, planName: dp.name||dayName,
@@ -1110,28 +1651,33 @@ function startWorkout(dayName){
 }
 let workoutTickInterval=null;
 function repeatWorkout(w){
-  if(activeWorkout){
-    if(!confirm('You have a workout already in progress. Starting this will replace it. Continue?')) return;
-  }
-  const exercises = w.exercises.map(ex=>{
-    const hist = historyForExercise(ex.exerciseId, null);
-    const prevSets = hist[0] ? hist[0].sets : [];
-    const sets = ex.sets.map((s,i)=>{
-      const src = prevSets[i] || prevSets[prevSets.length-1] || null;
-      return {type:s.type, weight: src?src.weight:'', reps:'', rir:''};
+  function proceed(){
+    const exercises = w.exercises.map(ex=>{
+      const mode = getExerciseTracking(ex);
+      const hist = historyForExercise(ex.exerciseId, null);
+      const prevSets = hist[0] ? hist[0].sets : [];
+      const sets = ex.sets.map((s,i)=>{
+        const src = prevSets[i] || prevSets[prevSets.length-1] || null;
+        return makeEmptySetForMode(mode, src);
+      });
+      return {exerciseId:ex.exerciseId, name:ex.name, muscleGroup:ex.muscleGroup||'', trackingMode:mode, equipment:ex.equipment||'', restTime:ex.restTime||settings.restDefault, isBarbell:!!ex.isBarbell, supersetGroup:ex.supersetGroup||null, notes:'', sets};
     });
-    return {exerciseId:ex.exerciseId, name:ex.name, muscleGroup:ex.muscleGroup||'', restTime:ex.restTime||settings.restDefault, isBarbell:!!ex.isBarbell, supersetGroup:ex.supersetGroup||null, notes:'', sets};
-  });
-  activeWorkout = {
-    id: uid(), date: todayISO(), dayName: w.dayName, planName: w.planName,
-    startTime: Date.now(), endTime:null, durationSec:0, notes:'',
-    exercises
-  };
-  expandedExId = exercises.length ? exercises[0].exerciseId : null;
-  saveActiveWorkout();
-  showToast('Workout repeated — let\'s go 💪');
-  navigate('workout');
-  startWorkoutTicker();
+    activeWorkout = {
+      id: uid(), date: todayISO(), dayName: w.dayName, planName: w.planName,
+      startTime: Date.now(), endTime:null, durationSec:0, notes:'',
+      exercises
+    };
+    expandedExId = exercises.length ? exercises[0].exerciseId : null;
+    saveActiveWorkout();
+    showToast('Workout repeated — let\'s go 💪');
+    navigate('workout');
+    startWorkoutTicker();
+  }
+  if(activeWorkout){
+    showConfirmModal('You have a workout already in progress. Starting this will replace it. Continue?', proceed, {title:'Replace Active Workout?', okLabel:'Continue', danger:true});
+  }else{
+    proceed();
+  }
 }
 function startWorkoutTicker(){
   clearInterval(workoutTickInterval);
@@ -1198,12 +1744,17 @@ function renderWorkoutScreen(app){
 
 function renderTrackExerciseCard(ex, labelPrefix){
   const isOpen = expandedExId===ex.exerciseId;
+  const mode = getExerciseTracking(ex);
   const card=document.createElement('div');
   card.className='ex-track-card'+(isOpen?' open':'');
-  const workingDone = ex.sets.filter(s=>s.type!=='warmup' && s.weight!=='' && s.reps!=='').length;
+  const workingDone = mode==='timed'||mode==='cardio'
+    ? ex.sets.filter(s=>s.type!=='warmup' && Number(s.durationSec)>0).length
+    : mode==='bodyweight'
+      ? ex.sets.filter(s=>s.type!=='warmup' && s.reps!=='' && s.reps!=null).length
+      : ex.sets.filter(s=>s.type!=='warmup' && s.weight!=='' && s.reps!=='').length;
   const head=document.createElement('div');
   head.className='ex-track-head';
-  head.innerHTML=`<div><div class="ex-track-name">${labelPrefix?`<span class="ss-badge">${escapeHtml(labelPrefix.trim().replace(/—$/,'').trim())}</span>`:''}${escapeHtml(ex.name)}</div><div class="ex-track-sub">${workingDone}/${ex.sets.filter(s=>s.type!=='warmup').length} sets logged${ex.muscleGroup?' · '+escapeHtml(ex.muscleGroup):''}</div></div><span class="chevron">▾</span>`;
+  head.innerHTML=`<div><div class="ex-track-name">${labelPrefix?`<span class="ss-badge">${escapeHtml(labelPrefix.trim().replace(/—$/,'').trim())}</span>`:''}${escapeHtml(ex.name)}${ex.equipment?` <span class="ex-equip-tag">${escapeHtml(ex.equipment)}</span>`:''}</div><div class="ex-track-sub">${workingDone}/${ex.sets.filter(s=>s.type!=='warmup').length} sets logged${ex.muscleGroup?' · '+escapeHtml(ex.muscleGroup):''}</div></div><span class="chevron">▾</span>`;
   head.onclick=()=>{ expandedExId = isOpen? null : ex.exerciseId; render(); };
   card.appendChild(head);
 
@@ -1211,20 +1762,35 @@ function renderTrackExerciseCard(ex, labelPrefix){
     const body=document.createElement('div');
     body.className='ex-track-body';
 
-    const hist = historyForExercise(ex.exerciseId, activeWorkout.id);
-    const last = hist[0];
-    const best = bestSetForExercise(ex.exerciseId, activeWorkout.id);
-    const prevBox=document.createElement('div');
-    prevBox.className='prev-box';
-    if(last){
-      prevBox.innerHTML=`<div class="pb-label">Last time — ${fmtDateShort(last.date)}</div>
-        <div class="prev-chips">${last.sets.map(s=>`<span class="set-chip">${s.weight}${wu()} × ${s.reps}</span>`).join('')}</div>
-        ${best?`<div class="pb-label" style="margin-top:10px;">Best</div><div class="prev-chips"><span class="set-chip" style="background:var(--gold-dim); color:var(--gold); border-color:#e8b64c44;">${best.weight}${wu()} × ${best.reps}</span></div>`:''}
-        <div class="suggestion-txt">💡 ${suggestionText(last)}</div>`;
+    if(mode==='timed' || mode==='cardio'){
+      const hist = historyForExerciseDuration(ex.exerciseId, activeWorkout.id);
+      const last = hist[0];
+      const prevBox=document.createElement('div');
+      prevBox.className='prev-box';
+      if(last){
+        prevBox.innerHTML=`<div class="pb-label">Last time — ${fmtDateShort(last.date)}</div>
+          <div class="prev-chips">${last.sets.map(s=> mode==='cardio' ? `<span class="set-chip">${fmtMMSS(s.durationSec)}${s.distanceKm?' · '+s.distanceKm+'km':''}</span>` : `<span class="set-chip">${fmtMMSS(s.durationSec)}</span>`).join('')}</div>`;
+      }else{
+        prevBox.innerHTML=`<div class="pb-label">First time logging this</div><div style="font-size:0.8rem; color:var(--text-muted);">Log today's ${mode==='cardio'?'session':'hold'} — this becomes your baseline.</div>`;
+      }
+      body.appendChild(prevBox);
     }else{
-      prevBox.innerHTML=`<div class="pb-label">First time logging this</div><div style="font-size:0.8rem; color:var(--text-muted);">Log today's sets — this becomes your baseline.</div>`;
+      const hist = historyForExercise(ex.exerciseId, activeWorkout.id);
+      const last = hist[0];
+      const best = bestSetForExercise(ex.exerciseId, activeWorkout.id);
+      const prevBox=document.createElement('div');
+      prevBox.className='prev-box';
+      if(last){
+        prevBox.innerHTML=`<div class="pb-label">Last time — ${fmtDateShort(last.date)}</div>
+          <div class="prev-chips">${last.sets.map(s=>`<span class="set-chip">${s.weight}${wu()} × ${s.reps}</span>`).join('')}</div>
+          ${best?`<div class="pb-label" style="margin-top:10px;">Best</div><div class="prev-chips"><span class="set-chip" style="background:var(--gold-dim); color:var(--gold); border-color:#e8b64c44;">${best.weight}${wu()} × ${best.reps}</span></div>`:''}
+          <div class="suggestion-txt">💡 ${suggestionText(last)}</div>`;
+      }else{
+        prevBox.innerHTML=`<div class="pb-label">First time logging this</div><div style="font-size:0.8rem; color:var(--text-muted);">Log today's sets — this becomes your baseline.</div>`;
+      }
+      body.appendChild(prevBox);
     }
-    body.appendChild(prevBox);
+    var hist = (mode==='timed'||mode==='cardio') ? historyForExerciseDuration(ex.exerciseId, activeWorkout.id) : historyForExercise(ex.exerciseId, activeWorkout.id);
 
     const setsWrap=document.createElement('div');
     ex.sets.forEach((s,i)=> setsWrap.appendChild(renderSetRow(ex,s,i)));
@@ -1233,10 +1799,10 @@ function renderTrackExerciseCard(ex, labelPrefix){
     const addRow=document.createElement('div');
     addRow.className='add-set-row';
     addRow.innerHTML=`<button class="warmup-btn">+ Warm-up Set</button><button>+ Add Set</button>`;
-    addRow.children[0].onclick=()=>{ ex.sets.push({type:'warmup',weight:'',reps:'',rir:''}); saveActiveWorkout(); render(); };
+    addRow.children[0].onclick=()=>{ ex.sets.push(Object.assign(makeEmptySetForMode(mode,null), {type:'warmup'})); saveActiveWorkout(); render(); };
     addRow.children[1].onclick=()=>{
-      const inherited = lastUsableSet(ex, hist);
-      ex.sets.push({type:'working', weight: inherited?inherited.weight:'', reps: inherited?inherited.reps:'', rir:''});
+      const inherited = mode==='weight_reps'||mode==='bodyweight' ? lastUsableSet(ex, hist) : null;
+      ex.sets.push(makeEmptySetForMode(mode, inherited));
       saveActiveWorkout(); render();
     };
     body.appendChild(addRow);
@@ -1302,11 +1868,19 @@ function lastUsableSet(ex, hist){
 }
 
 function renderSetRow(ex,s,i){
+  const mode = getExerciseTracking(ex);
+  if(mode==='timed') return renderTimedSetRow(ex,s,i);
+  if(mode==='cardio') return renderCardioSetRow(ex,s,i);
+  return renderWeightRepsSetRow(ex,s,i,mode); // 'weight_reps' or 'bodyweight'
+}
+function renderWeightRepsSetRow(ex,s,i,mode){
+  const isBodyweight = mode==='bodyweight';
   const isWarm = s.type==='warmup';
-  const isDone = s.weight!=='' && s.weight!=null && s.reps!=='' && s.reps!=null;
+  const isDone = isBodyweight ? (s.reps!=='' && s.reps!=null) : (s.weight!=='' && s.weight!=null && s.reps!=='' && s.reps!=null);
   const card=document.createElement('div');
   card.className='set-card'+(isDone?' done':'');
   const wInc = settings.weightIncrement || 2.5;
+  const weightLbl = isBodyweight ? `Added Weight (${wu()}) · optional` : `Weight (${wu()})`;
 
   card.innerHTML=`
     <div class="set-card-top">
@@ -1315,7 +1889,7 @@ function renderSetRow(ex,s,i){
     </div>
     <div class="stepper-group">
       <div class="stepper-block">
-        <div class="stepper-lbl">Weight (${wu()})</div>
+        <div class="stepper-lbl">${weightLbl}</div>
         <div class="stepper-row">
           <button class="stepper-btn" data-act="w-">−</button>
           <input class="stepper-input" type="number" inputmode="decimal" placeholder="0" value="${s.weight}">
@@ -1331,10 +1905,10 @@ function renderSetRow(ex,s,i){
         </div>
       </div>
     </div>
-    <div class="rir-lbl-row">RIR (optional)</div>
+    ${isBodyweight?'':`<div class="rir-lbl-row">RIR (optional)</div>
     <div class="rir-chip-row">
       ${['','0','1','2','3','4'].map(v=>`<button class="rir-chip ${s.rir===v?'sel':''}" data-rir="${v}">${v===''?'—':(v==='4'?'4+':v)}</button>`).join('')}
-    </div>
+    </div>`}
     <div class="plate-hint" style="display:none;"></div>
   `;
   const wInput = card.querySelector('.stepper-input[inputmode="decimal"]');
@@ -1352,7 +1926,7 @@ function renderSetRow(ex,s,i){
     saveActiveWorkout(); refreshCardState();
   }
   function refreshCardState(){
-    const done = s.weight!=='' && s.weight!=null && s.reps!=='' && s.reps!=null;
+    const done = isBodyweight ? (s.reps!=='' && s.reps!=null) : (s.weight!=='' && s.weight!=null && s.reps!=='' && s.reps!=null);
     card.classList.toggle('done', done);
     updatePlateHint();
     if(done && s.type!=='warmup'){
@@ -1365,7 +1939,7 @@ function renderSetRow(ex,s,i){
     }
   }
   function updatePlateHint(){
-    if(ex.isBarbell && s.weight!=='' && s.weight!=null && Number(s.weight)>0){
+    if(!isBodyweight && ex.isBarbell && s.weight!=='' && s.weight!=null && Number(s.weight)>0){
       const r = calcPlates(Number(s.weight));
       if(r.combo.length===0){
         plateHint.style.display='flex';
@@ -1388,10 +1962,184 @@ function renderSetRow(ex,s,i){
   card.querySelector('[data-act="r-"]').onclick=()=> commitReps(Math.max(0,(Number(s.reps)||0)-1));
   card.querySelector('[data-act="r+"]').onclick=()=> commitReps((Number(s.reps)||0)+1);
 
-  card.querySelectorAll('.rir-chip').forEach(chip=>{
-    chip.onclick=()=>{ s.rir=chip.dataset.rir; saveActiveWorkout(); card.querySelectorAll('.rir-chip').forEach(c=>c.classList.remove('sel')); chip.classList.add('sel'); };
-  });
+  if(!isBodyweight){
+    card.querySelectorAll('.rir-chip').forEach(chip=>{
+      chip.onclick=()=>{ s.rir=chip.dataset.rir; saveActiveWorkout(); card.querySelectorAll('.rir-chip').forEach(c=>c.classList.remove('sel')); chip.classList.add('sel'); };
+    });
+  }
   card.querySelector('.set-card-rm').onclick=()=>{ ex.sets.splice(i,1); saveActiveWorkout(); render(); };
+  return card;
+}
+
+/* ---- Timed exercises (Plank, Wall Sit, etc.) — live duration timer, separate from the Rest Timer ---- */
+let liveSetTimer = { running:false, exerciseId:null, setIndex:null, intervalId:null };
+function stopLiveSetTimer(){
+  if(liveSetTimer.intervalId) clearInterval(liveSetTimer.intervalId);
+  liveSetTimer = { running:false, exerciseId:null, setIndex:null, intervalId:null };
+}
+function renderTimedSetRow(ex,s,i){
+  const isWarm = s.type==='warmup';
+  const isDone = Number(s.durationSec)>0;
+  const isRunningThis = liveSetTimer.running && liveSetTimer.exerciseId===ex.exerciseId && liveSetTimer.setIndex===i;
+  const card=document.createElement('div');
+  card.className='set-card timed-set-card'+(isDone?' done':'');
+  card.innerHTML=`
+    <div class="set-card-top">
+      <div class="set-card-tag ${isWarm?'warm':''}">${isWarm?'🔸 Warm-up':'SET '+(i+1)} <span class="set-card-done-badge">✓ LOGGED</span></div>
+      <button class="set-card-rm" title="Remove set">✕</button>
+    </div>
+    <div class="timed-set-body">
+      <div class="stepper-lbl" style="text-align:center;">Duration</div>
+      <div class="timed-display" id="timedDisplay-${ex.exerciseId}-${i}">${fmtMMSS(s.durationSec)}</div>
+      <div class="timed-controls">
+        <button class="stepper-btn" data-act="d-">−5s</button>
+        <button class="timed-startpause" data-act="startpause">${isRunningThis?'⏸ Pause':'▶ Start'}</button>
+        <button class="stepper-btn" data-act="d+">+5s</button>
+      </div>
+    </div>
+  `;
+  const display = card.querySelector('.timed-display');
+  const startBtn = card.querySelector('[data-act="startpause"]');
+
+  function refreshDone(){
+    card.classList.toggle('done', Number(s.durationSec)>0);
+  }
+  function setDuration(v){
+    s.durationSec = Math.max(0, Math.round(v));
+    display.textContent = fmtMMSS(s.durationSec);
+    saveActiveWorkout(); refreshDone();
+  }
+  card.querySelector('[data-act="d-"]').onclick=()=> setDuration((Number(s.durationSec)||0)-5);
+  card.querySelector('[data-act="d+"]').onclick=()=> setDuration((Number(s.durationSec)||0)+5);
+
+  startBtn.onclick=()=>{
+    const alreadyRunningThis = liveSetTimer.running && liveSetTimer.exerciseId===ex.exerciseId && liveSetTimer.setIndex===i;
+    stopLiveSetTimer(); // only one timed-set timer can run at once
+    if(alreadyRunningThis){
+      startBtn.textContent='▶ Start';
+      doVibrate('light');
+      return;
+    }
+    startBtn.textContent='⏸ Pause';
+    liveSetTimer.running=true; liveSetTimer.exerciseId=ex.exerciseId; liveSetTimer.setIndex=i;
+    liveSetTimer.intervalId=setInterval(()=>{
+      s.durationSec = (Number(s.durationSec)||0)+1;
+      display.textContent = fmtMMSS(s.durationSec);
+      card.classList.add('done');
+      saveActiveWorkout();
+    },1000);
+  };
+  card.querySelector('.set-card-rm').onclick=()=>{
+    if(liveSetTimer.exerciseId===ex.exerciseId && liveSetTimer.setIndex===i) stopLiveSetTimer();
+    ex.sets.splice(i,1); saveActiveWorkout(); render();
+  };
+  return card;
+}
+
+/* ---- Cardio exercises (Treadmill, Cycling, etc.) — Duration + Distance (+ optional Speed/Incline) ---- */
+function renderCardioSetRow(ex,s,i){
+  const isWarm = s.type==='warmup';
+  const isDone = Number(s.durationSec)>0;
+  const isRunningThis = liveSetTimer.running && liveSetTimer.exerciseId===ex.exerciseId && liveSetTimer.setIndex===i;
+  const card=document.createElement('div');
+  card.className='set-card timed-set-card'+(isDone?' done':'');
+  card.innerHTML=`
+    <div class="set-card-top">
+      <div class="set-card-tag ${isWarm?'warm':''}">${isWarm?'🔸 Warm-up':'SET '+(i+1)} <span class="set-card-done-badge">✓ LOGGED</span></div>
+      <button class="set-card-rm" title="Remove set">✕</button>
+    </div>
+    <div class="timed-set-body">
+      <div class="stepper-lbl" style="text-align:center;">Duration</div>
+      <div class="timed-display" id="cardioDisplay-${ex.exerciseId}-${i}">${fmtMMSS(s.durationSec)}</div>
+      <div class="timed-controls">
+        <button class="stepper-btn" data-act="d-">−30s</button>
+        <button class="timed-startpause" data-act="startpause">${isRunningThis?'⏸ Pause':'▶ Start'}</button>
+        <button class="stepper-btn" data-act="d+">+30s</button>
+      </div>
+    </div>
+    <div class="stepper-group" style="margin-top:12px;">
+      <div class="stepper-block">
+        <div class="stepper-lbl">Distance (km)</div>
+        <div class="stepper-row">
+          <button class="stepper-btn" data-act="dist-">−</button>
+          <input class="stepper-input" type="number" inputmode="decimal" placeholder="0" value="${s.distanceKm}">
+          <button class="stepper-btn" data-act="dist+">+</button>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="cardio-more-toggle">+ Speed / Incline (optional)</button>
+    <div class="stepper-group cardio-more" style="display:none; margin-top:10px;">
+      <div class="stepper-block">
+        <div class="stepper-lbl">Speed (km/h)</div>
+        <div class="stepper-row">
+          <button class="stepper-btn" data-act="sp-">−</button>
+          <input class="stepper-input" type="number" inputmode="decimal" placeholder="0" value="${s.speedKmh||''}">
+          <button class="stepper-btn" data-act="sp+">+</button>
+        </div>
+      </div>
+      <div class="stepper-block">
+        <div class="stepper-lbl">Incline (%)</div>
+        <div class="stepper-row">
+          <button class="stepper-btn" data-act="in-">−</button>
+          <input class="stepper-input" type="number" inputmode="decimal" placeholder="0" value="${s.incline||''}">
+          <button class="stepper-btn" data-act="in+">+</button>
+        </div>
+      </div>
+    </div>
+  `;
+  const display = card.querySelector('.timed-display');
+  const startBtn = card.querySelector('[data-act="startpause"]');
+  const distInput = card.querySelector('.stepper-input[inputmode="decimal"]');
+  card.querySelector('.cardio-more-toggle').onclick=(ev)=>{
+    const more = card.querySelector('.cardio-more');
+    const showing = more.style.display!=='none';
+    more.style.display = showing?'none':'flex';
+    ev.target.textContent = showing? '+ Speed / Incline (optional)' : '− Hide Speed / Incline';
+  };
+
+  function refreshDone(){ card.classList.toggle('done', Number(s.durationSec)>0); }
+  function setDuration(v){
+    s.durationSec = Math.max(0, Math.round(v));
+    display.textContent = fmtMMSS(s.durationSec);
+    saveActiveWorkout(); refreshDone();
+  }
+  function setDistance(v){
+    s.distanceKm = v===''||v==null ? '' : Math.max(0, Math.round(Number(v)*100)/100);
+    distInput.value = s.distanceKm;
+    saveActiveWorkout(); refreshDone();
+  }
+  card.querySelector('[data-act="d-"]').onclick=()=> setDuration((Number(s.durationSec)||0)-30);
+  card.querySelector('[data-act="d+"]').onclick=()=> setDuration((Number(s.durationSec)||0)+30);
+  card.querySelector('[data-act="dist-"]').onclick=()=> setDistance(Math.max(0,(Number(s.distanceKm)||0)-0.1));
+  card.querySelector('[data-act="dist+"]').onclick=()=> setDistance((Number(s.distanceKm)||0)+0.1);
+  distInput.oninput=(e)=>{ s.distanceKm = e.target.value===''?'':Number(e.target.value); saveActiveWorkout(); refreshDone(); };
+
+  const speedInput = card.querySelectorAll('.cardio-more .stepper-input')[0];
+  const inclineInput = card.querySelectorAll('.cardio-more .stepper-input')[1];
+  card.querySelector('[data-act="sp-"]').onclick=()=>{ s.speedKmh=Math.max(0,Math.round(((Number(s.speedKmh)||0)-0.5)*10)/10); speedInput.value=s.speedKmh; saveActiveWorkout(); };
+  card.querySelector('[data-act="sp+"]').onclick=()=>{ s.speedKmh=Math.round(((Number(s.speedKmh)||0)+0.5)*10)/10; speedInput.value=s.speedKmh; saveActiveWorkout(); };
+  card.querySelector('[data-act="in-"]').onclick=()=>{ s.incline=Math.max(0,(Number(s.incline)||0)-0.5); inclineInput.value=s.incline; saveActiveWorkout(); };
+  card.querySelector('[data-act="in+"]').onclick=()=>{ s.incline=(Number(s.incline)||0)+0.5; inclineInput.value=s.incline; saveActiveWorkout(); };
+  speedInput.oninput=(e)=>{ s.speedKmh = e.target.value===''?'':Number(e.target.value); saveActiveWorkout(); };
+  inclineInput.oninput=(e)=>{ s.incline = e.target.value===''?'':Number(e.target.value); saveActiveWorkout(); };
+
+  startBtn.onclick=()=>{
+    const alreadyRunningThis = liveSetTimer.running && liveSetTimer.exerciseId===ex.exerciseId && liveSetTimer.setIndex===i;
+    stopLiveSetTimer();
+    if(alreadyRunningThis){ startBtn.textContent='▶ Start'; doVibrate('light'); return; }
+    startBtn.textContent='⏸ Pause';
+    liveSetTimer.running=true; liveSetTimer.exerciseId=ex.exerciseId; liveSetTimer.setIndex=i;
+    liveSetTimer.intervalId=setInterval(()=>{
+      s.durationSec = (Number(s.durationSec)||0)+1;
+      display.textContent = fmtMMSS(s.durationSec);
+      card.classList.add('done');
+      saveActiveWorkout();
+    },1000);
+  };
+  card.querySelector('.set-card-rm').onclick=()=>{
+    if(liveSetTimer.exerciseId===ex.exerciseId && liveSetTimer.setIndex===i) stopLiveSetTimer();
+    ex.sets.splice(i,1); saveActiveWorkout(); render();
+  };
   return card;
 }
 function startRest(seconds){
@@ -1410,41 +2158,38 @@ function startRest(seconds){
 }
 function onRestComplete(){
   if(settings.sound) playBeep();
-  if(settings.vibration && navigator.vibrate) navigator.vibrate([200,100,200]);
+  doVibrate('medium');
   showToast('Rest complete 💪');
   renderRestWidget();
 }
-function playBeep(){
-  try{
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const o=ctx.createOscillator(); const g=ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.frequency.value=880; g.gain.value=0.15;
-    o.start(); o.stop(ctx.currentTime+0.35);
-  }catch(e){}
-}
+
+let restWidgetExpanded = false;
 function renderRestWidget(){
   const root=document.getElementById('restWidgetRoot');
   if(!restTimer.running && restTimer.seconds<=0){ root.innerHTML=''; return; }
   if(!restTimer.running && restTimer.seconds>0){ root.innerHTML=''; return; }
-  root.innerHTML=`
-    <div class="rest-widget">
-      <div><div class="rw-label">Rest</div><div class="rw-time">${fmtClock(restTimer.seconds)}</div></div>
-      <div class="rw-actions">
-        <button class="rw-btn" id="rwMinus">−15s</button>
-        <button class="rw-btn" id="rwPlus">+15s</button>
-        <button class="rw-btn" id="rwSkip">Skip</button>
-      </div>
-    </div>`;
-  document.getElementById('rwMinus').onclick=()=>{ restTimer.seconds=Math.max(0,restTimer.seconds-15); if(restTimer.seconds===0){ clearInterval(restTimer.intervalId); restTimer.running=false; onRestComplete(); } renderRestWidget(); };
-  document.getElementById('rwPlus').onclick=()=>{ restTimer.seconds+=15; renderRestWidget(); };
-  document.getElementById('rwSkip').onclick=()=>{ clearInterval(restTimer.intervalId); restTimer.running=false; restTimer.seconds=0; renderRestWidget(); };
+  root.innerHTML = `
+    <button class="rest-fab" id="restFab"><span><span class="rf-label">Rest</span>${fmtClock(restTimer.seconds)}</span></button>
+    ${restWidgetExpanded ? `<div class="rest-popover" id="restPopover">
+      <button class="rw-btn" id="rwMinus">−15s</button>
+      <button class="rw-btn" id="rwPlus">+15s</button>
+      <button class="rw-btn" id="rwSkip">Skip</button>
+    </div>` : ''}`;
+  document.getElementById('restFab').onclick=()=>{ restWidgetExpanded=!restWidgetExpanded; renderRestWidget(); };
+  if(restWidgetExpanded){
+    document.getElementById('rwMinus').onclick=(ev)=>{ ev.stopPropagation(); restTimer.seconds=Math.max(0,restTimer.seconds-15); if(restTimer.seconds===0){ clearInterval(restTimer.intervalId); restTimer.running=false; onRestComplete(); } renderRestWidget(); };
+    document.getElementById('rwPlus').onclick=(ev)=>{ ev.stopPropagation(); restTimer.seconds+=15; renderRestWidget(); };
+    document.getElementById('rwSkip').onclick=(ev)=>{ ev.stopPropagation(); clearInterval(restTimer.intervalId); restTimer.running=false; restTimer.seconds=0; restWidgetExpanded=false; renderRestWidget(); };
+  }
 }
 
 function endWorkout(){
   clearInterval(workoutTickInterval);
+  stopLiveSetTimer();
   activeWorkout.endTime=Date.now();
   activeWorkout.durationSec=Math.floor((activeWorkout.endTime-activeWorkout.startTime)/1000);
+  if(settings.sound) playCompletionSound();
+  doVibrate('heavy');
   showSummaryModal(activeWorkout);
 }
 
@@ -1639,7 +2384,7 @@ function renderPlanExerciseCard(dp,e,i){
   card.querySelector('[data-act="up"]').onclick=()=>{ if(i>0){ [dp.exercises[i-1],dp.exercises[i]]=[dp.exercises[i],dp.exercises[i-1]]; savePlan(); render(); } };
   card.querySelector('[data-act="down"]').onclick=()=>{ if(i<dp.exercises.length-1){ [dp.exercises[i+1],dp.exercises[i]]=[dp.exercises[i],dp.exercises[i+1]]; savePlan(); render(); } };
   card.querySelector('[data-act="del"]').onclick=()=>{
-    if(confirm(`Remove ${e.name} from ${planActiveDay}?`)){ dp.exercises.splice(i,1); savePlan(); render(); }
+    showConfirmModal(`Remove ${e.name} from ${planActiveDay}?`, ()=>{ dp.exercises.splice(i,1); savePlan(); render(); }, {title:'Remove Exercise', okLabel:'Remove', danger:true});
   };
   card.onclick=(ev)=>{ if(ev.target.closest('.icon-btn')) return; openExerciseConfig(dp,e); };
   return card;
@@ -1659,6 +2404,14 @@ function openExerciseConfig(dp,e){
     <div class="form-row">
       <div class="form-group"><label class="form-label">Working Sets</label><input class="form-input" type="number" min="1" id="cfgSets" value="${e.sets}"></div>
       <div class="form-group"><label class="form-label">Target Reps</label><input class="form-input" id="cfgReps" value="${e.reps}" placeholder="8-10"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Exercise Type</label>
+      <select class="form-input" id="cfgTracking">
+        ${Object.keys(TRACKING_MODES).map(tm=>`<option value="${tm}" ${getExerciseTracking(e)===tm?'selected':''}>${TRACKING_MODES[tm]}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Equipment / Variation (optional)</label>
+      <input class="form-input" id="cfgEquipment" value="${escapeHtml(e.equipment||'')}" placeholder="e.g. Wide Grip, Dumbbell, Smith Machine">
     </div>
     <div class="form-group"><label class="form-label">Rest Time (seconds)</label>
       <select class="form-input" id="cfgRest">
@@ -1689,6 +2442,8 @@ function openExerciseConfig(dp,e){
   overlay.querySelector('#cfgSave').onclick=()=>{
     e.sets=Number(document.getElementById('cfgSets').value)||3;
     e.reps=document.getElementById('cfgReps').value||'8-10';
+    e.trackingMode=document.getElementById('cfgTracking').value;
+    e.equipment=document.getElementById('cfgEquipment').value.trim();
     { const rv=document.getElementById('cfgRest').value; e.rest = rv==='default' ? (settings.restDefault||90) : Number(rv); }
     e.warmup=document.getElementById('cfgWarm').checked;
     e.isBarbell=document.getElementById('cfgBarbell').checked;
@@ -1716,8 +2471,8 @@ function openExercisePicker(dp){
   overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
   overlay.onclick=(ev)=>{ if(ev.target===overlay) overlay.remove(); };
 
-  function addExercise(name, muscleGroup){
-    dp.exercises.push({id:uid(), name, muscleGroup:muscleGroup||'', sets:3, reps:'8-10', rest:settings.restDefault, warmup:false, notes:''});
+  function addExercise(name, muscleGroup, trackingMode, equipment){
+    dp.exercises.push({id:uid(), name, muscleGroup:muscleGroup||'', trackingMode: trackingMode || inferTrackingMode(name, muscleGroup), equipment: equipment||'', sets:3, reps:'8-10', rest:settings.restDefault, warmup:false, notes:''});
     savePlan(); overlay.remove(); render(); showToast(`${name} added`);
   }
   function renderResults(query){
@@ -1741,9 +2496,64 @@ function openExercisePicker(dp){
     if(q && !anyMatch){
       const row=document.createElement('div'); row.className='lib-item';
       row.innerHTML=`<span>Add "${escapeHtml(query)}" as custom exercise</span><button>Add</button>`;
-      row.querySelector('button').onclick=()=>addExercise(query,'Other');
+      row.querySelector('button').onclick=()=>openMuscleGroupPicker(query);
       wrap.appendChild(row);
     }
+  }
+  const MUSCLE_GROUPS = ['Chest','Back','Shoulders','Biceps','Triceps','Legs','Glutes','Core','Calves','Forearms','Other'];
+  function openMuscleGroupPicker(name){
+    modal.innerHTML=`<div class="modal-head"><div class="modal-title">Add Exercise</div><button class="modal-close">✕</button></div>
+      <div class="form-group"><label class="form-label">Exercise Name</label>
+        <input class="form-input" id="mgExName" value="${escapeHtml(name)}">
+      </div>
+      <div class="form-group"><label class="form-label">Primary Muscle Group</label>
+        <div id="mgOptions" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Exercise Type</label>
+        <div id="mgTrackingOptions" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        <p style="font-size:0.68rem; color:var(--text-dim); margin-top:6px;">This decides what you'll log — weight+reps, just reps, a duration timer, or duration+distance.</p>
+      </div>
+      <button class="btn btn-primary btn-full" id="mgSaveBtn" style="margin-top:10px;" disabled>Save Exercise</button>`;
+    overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
+    let selected = null;
+    let selectedTracking = 'weight_reps';
+    const opts = modal.querySelector('#mgOptions');
+    MUSCLE_GROUPS.forEach(g=>{
+      const chip=document.createElement('button');
+      chip.type='button';
+      chip.className='mg-chip';
+      chip.textContent=g;
+      chip.onclick=()=>{
+        selected=g;
+        opts.querySelectorAll('.mg-chip').forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        modal.querySelector('#mgSaveBtn').disabled=false;
+        if(g==='Cardio'){
+          selectedTracking='cardio';
+          trackOpts.querySelectorAll('.mg-chip').forEach(c=>c.classList.toggle('active', c.dataset.tm==='cardio'));
+        }
+      };
+      opts.appendChild(chip);
+    });
+    const trackOpts = modal.querySelector('#mgTrackingOptions');
+    Object.keys(TRACKING_MODES).forEach(tm=>{
+      const chip=document.createElement('button');
+      chip.type='button';
+      chip.className='mg-chip'+(tm==='weight_reps'?' active':'');
+      chip.dataset.tm=tm;
+      chip.textContent=TRACKING_MODES[tm];
+      chip.onclick=()=>{
+        selectedTracking=tm;
+        trackOpts.querySelectorAll('.mg-chip').forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+      };
+      trackOpts.appendChild(chip);
+    });
+    modal.querySelector('#mgSaveBtn').onclick=()=>{
+      const finalName = modal.querySelector('#mgExName').value.trim() || name;
+      if(!selected) return;
+      addExercise(finalName, selected, selectedTracking);
+    };
   }
   renderResults('');
   document.getElementById('exSearch').oninput=(e)=>renderResults(e.target.value);
@@ -1760,6 +2570,32 @@ function renderProgress(app){
   statusCard.style.marginBottom='16px';
   statusCard.innerHTML=`<div class="insight-status">${statusInsight.icon} Progress: ${escapeHtml(statusInsight.status)}</div><div class="insight-msg">${escapeHtml(statusInsight.message)}</div>`;
   app.appendChild(statusCard);
+
+  // All-time stats
+  const at = allTimeStats();
+  const atCard=document.createElement('div');
+  atCard.className='card';
+  atCard.innerHTML=`<div class="card-title">All-Time Stats</div>
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat-box"><div class="stat-num">${at.totalWorkouts}</div><div class="stat-lbl">Workouts</div></div>
+      <div class="stat-box"><div class="stat-num">${at.totalSets}</div><div class="stat-lbl">Sets</div></div>
+      <div class="stat-box"><div class="stat-num">${at.totalReps}</div><div class="stat-lbl">Reps</div></div>
+      <div class="stat-box"><div class="stat-num">${Math.round(at.totalVolume).toLocaleString()}</div><div class="stat-lbl">Volume ${wu()}</div></div>
+      <div class="stat-box"><div class="stat-num">🔥 ${at.currentStreak}</div><div class="stat-lbl">Streak</div></div>
+      <div class="stat-box"><div class="stat-num">🏆 ${at.bestStreak}</div><div class="stat-lbl">Best Streak</div></div>
+    </div>
+    <div style="text-align:center; margin-top:10px; font-size:0.72rem; color:var(--text-muted);">Avg ${at.weeklyFreq.toFixed(1)} workouts/week</div>`;
+  app.appendChild(atCard);
+
+  // Body weight trend
+  if(bodymetrics.bodyweight && bodymetrics.bodyweight.length>1){
+    const bwCard=document.createElement('div');
+    bwCard.className='card';
+    bwCard.innerHTML=`<div class="card-title">Body Weight Trend</div>`;
+    const bwSorted = bodymetrics.bodyweight.slice().sort((a,b)=>a.date.localeCompare(b.date));
+    bwCard.appendChild(buildLineChart(bwSorted.slice(-60).map(e=>({date:e.date, value:e.weight}))));
+    app.appendChild(bwCard);
+  }
 
   const wk = getWeekWorkouts(0), lastWk = getWeekWorkouts(1);
   const wkVol=wk.reduce((s,w)=>s+workoutVolume(w),0), lastVol=lastWk.reduce((s,w)=>s+workoutVolume(w),0);
@@ -1807,19 +2643,45 @@ function renderProgress(app){
     app.appendChild(mgCard);
   }
 
-  // PR list
+  // PR list — user can pick their own "Top Exercises"; empty selection = show all (default)
   if(exList.length){
     const prCard=document.createElement('div');
     prCard.className='card';
-    prCard.innerHTML=`<div class="card-title">Personal Records</div>`;
-    exList.forEach(ex=>{
+    const usingCustom = favoriteExerciseIds.length>0;
+    const prList = usingCustom ? favoriteExerciseIds.map(id=>exList.find(e=>e.id===id)).filter(Boolean) : exList;
+    prCard.innerHTML=`<div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>${usingCustom?'Your Top Exercises':'Personal Records'}</span>
+      <button class="btn btn-ghost btn-sm" id="prAddBtn">+ Add</button>
+    </div>`;
+    if(usingCustom && prList.length===0){
+      const empty=document.createElement('div'); empty.style.cssText='text-align:center; color:var(--text-muted); font-size:0.82rem; padding:16px 0;';
+      empty.textContent='No exercises pinned yet — tap + Add to choose your favorites.';
+      prCard.appendChild(empty);
+    }
+    prList.forEach(ex=>{
       const best=bestSetForExercise(ex.id, null);
-      if(!best) return;
       const row=document.createElement('div'); row.className='pr-item';
-      row.innerHTML=`<span class="pn">${escapeHtml(ex.name)}</span><span class="pv">${best.weight}${wu()} × ${best.reps}</span>`;
+      row.innerHTML=`<span class="pn">${escapeHtml(ex.name)}</span>
+        <span style="display:flex; align-items:center; gap:10px;">
+          <span class="pv">${best?`${best.weight}${wu()} × ${best.reps}`:'—'}</span>
+          ${usingCustom?'<button class="pr-remove-btn" title="Remove">✕</button>':''}
+        </span>`;
+      if(usingCustom){
+        row.querySelector('.pr-remove-btn').onclick=()=>{
+          favoriteExerciseIds = favoriteExerciseIds.filter(id=>id!==ex.id);
+          saveFavoriteExercises(); render();
+        };
+      }
       prCard.appendChild(row);
     });
     app.appendChild(prCard);
+    prCard.querySelector('#prAddBtn').onclick=()=>{
+      const pickable = exList.filter(e=>!favoriteExerciseIds.includes(e.id));
+      openExerciseSearchPicker(pickable, (chosen)=>{
+        favoriteExerciseIds.push(chosen.id);
+        saveFavoriteExercises(); render();
+      }, {title:'Add to Top Exercises'});
+    };
   }
 
   if(exList.length===0){
@@ -1832,18 +2694,22 @@ function renderProgress(app){
   const chartCard=document.createElement('div');
   chartCard.className='card';
   chartCard.innerHTML=`<div class="card-title">Exercise Progress</div>`;
-  const sel=document.createElement('select');
-  sel.className='form-input'; sel.style.marginBottom='12px';
-  exList.forEach(ex=>{
-    const o=document.createElement('option'); o.value=ex.id; o.textContent=ex.name;
-    if(ex.id===progressSelectedExercise) o.selected=true;
-    sel.appendChild(o);
-  });
-  sel.onchange=(e)=>{ progressSelectedExercise=e.target.value; render(); };
-  chartCard.appendChild(sel);
+  const curSelEx = exList.find(x=>x.id===progressSelectedExercise);
+  const selBtn=document.createElement('button');
+  selBtn.type='button';
+  selBtn.className='ex-select-btn';
+  selBtn.innerHTML=`<span>${escapeHtml(curSelEx?curSelEx.name:'Select exercise')}</span><span>🔍</span>`;
+  selBtn.onclick=()=> openExerciseSearchPicker(exList, (chosen)=>{
+    progressSelectedExercise=chosen.id; progressMetric='weight'; render();
+  }, {title:'Select Exercise'});
+  chartCard.appendChild(selBtn);
+
+  const selEx = exList.find(x=>x.id===progressSelectedExercise);
+  const selMode = selEx ? selEx.trackingMode : 'weight_reps';
+  const isDurationType = selMode==='timed' || selMode==='cardio';
 
   const pillRow=document.createElement('div'); pillRow.className='pill-row';
-  [['7d','7D'],['30d','30D'],['3m','3M'],['6m','6M'],['all','ALL']].forEach(([k,l])=>{
+  [['7d','7D'],['30d','30D'],['3m','3M'],['6m','6M'],['1y','1Y'],['all','ALL']].forEach(([k,l])=>{
     const p=document.createElement('button'); p.className='pill'+(progressRange===k?' active':''); p.textContent=l;
     p.onclick=()=>{ progressRange=k; render(); };
     pillRow.appendChild(p);
@@ -1851,46 +2717,86 @@ function renderProgress(app){
   chartCard.appendChild(pillRow);
 
   const metricRow=document.createElement('div'); metricRow.className='pill-row';
-  [['weight','Max Weight'],['1rm','Est. 1RM']].forEach(([k,l])=>{
+  const metricOptions = selMode==='timed' ? [['duration','Best Duration'],['avgduration','Avg Duration']]
+    : selMode==='cardio' ? [['duration','Duration'],['distance','Distance'],['pace','Pace']]
+    : [['weight','Max Weight'],['1rm','Est. 1RM'],['reps','Top Reps'],['volume','Volume']];
+  if(isDurationType && !['duration','avgduration','distance','pace'].includes(progressMetric)) progressMetric = metricOptions[0][0];
+  metricOptions.forEach(([k,l])=>{
     const p=document.createElement('button'); p.className='pill'+(progressMetric===k?' active':''); p.textContent=l;
     p.onclick=()=>{ progressMetric=k; render(); };
     metricRow.appendChild(p);
   });
   chartCard.appendChild(metricRow);
 
-  const hist = historyForExercise(progressSelectedExercise, null).slice().reverse(); // oldest first
-  const filtered = filterByRange(hist, progressRange);
   const chartWrap=document.createElement('div'); chartWrap.className='chart-wrap';
-  if(filtered.length<1){
-    chartWrap.innerHTML=`<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:20px 0;">Not enough data in this range yet.</div>`;
-  }else if(progressMetric==='1rm'){
-    chartWrap.appendChild(buildLineChart(filtered.map(r=>{
-      const top = r.sets.reduce((a,b)=> epley1RM(b.weight,b.reps)>epley1RM(a.weight,a.reps)?b:a, r.sets[0]);
-      return {date:r.date, value: epley1RM(top.weight, top.reps)};
-    })));
-  }else{
-    chartWrap.appendChild(buildLineChart(filtered.map(r=>({date:r.date, value:Math.max(...r.sets.map(s=>s.weight))}))));
-  }
-  chartCard.appendChild(chartWrap);
 
-  // history table
-  const histLbl=document.createElement('div'); histLbl.className='card-title section-sp'; histLbl.textContent='Session History';
-  chartCard.appendChild(histLbl);
-  historyForExercise(progressSelectedExercise, null).forEach(row=>{
-    const r=document.createElement('div'); r.className='history-item'; r.style.padding='10px 12px';
-    r.innerHTML=`<div class="hi-date" style="font-size:0.82rem;">${fmtDateShort(row.date)}</div><div class="prev-chips">${row.sets.map(s=>`<span class="set-chip">${s.weight}${wu()}×${s.reps}</span>`).join('')}</div>`;
-    chartCard.appendChild(r);
-  });
+  if(isDurationType){
+    const hist = historyForExerciseDuration(progressSelectedExercise, null).slice().reverse();
+    const filtered = filterByRange(hist, progressRange);
+    if(filtered.length<1){
+      chartWrap.innerHTML=`<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:20px 0;">Not enough data in this range yet.</div>`;
+    }else if(progressMetric==='avgduration'){
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>({date:r.date, value:Math.round(r.sets.reduce((a,s)=>a+Number(s.durationSec||0),0)/r.sets.length)})), 's'));
+    }else if(progressMetric==='distance'){
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>({date:r.date, value:Math.round(r.sets.reduce((a,s)=>a+(Number(s.distanceKm)||0),0)*100)/100})), 'km'));
+    }else if(progressMetric==='pace'){
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>{
+        const totalDur=r.sets.reduce((a,s)=>a+Number(s.durationSec||0),0);
+        const totalDist=r.sets.reduce((a,s)=>a+(Number(s.distanceKm)||0),0);
+        const pace = totalDist>0 ? Math.round((totalDur/60/totalDist)*100)/100 : 0;
+        return {date:r.date, value: pace};
+      }), ' min/km'));
+    }else{ // duration (best)
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>({date:r.date, value:Math.max(...r.sets.map(s=>Number(s.durationSec)||0))})), 's'));
+    }
+    chartCard.appendChild(chartWrap);
+
+    const histLbl=document.createElement('div'); histLbl.className='card-title section-sp'; histLbl.textContent='Session History';
+    chartCard.appendChild(histLbl);
+    historyForExerciseDuration(progressSelectedExercise, null).forEach(row=>{
+      const r=document.createElement('div'); r.className='history-item'; r.style.padding='10px 12px';
+      r.innerHTML=`<div class="hi-date" style="font-size:0.82rem;">${fmtDateShort(row.date)}</div><div class="prev-chips">${row.sets.map(s=> selMode==='cardio' ? `<span class="set-chip">${fmtMMSS(s.durationSec)}${s.distanceKm?' · '+s.distanceKm+'km':''}</span>` : `<span class="set-chip">${fmtMMSS(s.durationSec)}</span>`).join('')}</div>`;
+      chartCard.appendChild(r);
+    });
+  }else{
+    const hist = historyForExercise(progressSelectedExercise, null).slice().reverse(); // oldest first
+    const filtered = filterByRange(hist, progressRange);
+    if(filtered.length<1){
+      chartWrap.innerHTML=`<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:20px 0;">Not enough data in this range yet.</div>`;
+    }else if(progressMetric==='1rm'){
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>{
+        const top = r.sets.reduce((a,b)=> epley1RM(b.weight,b.reps)>epley1RM(a.weight,a.reps)?b:a, r.sets[0]);
+        return {date:r.date, value: epley1RM(top.weight, top.reps)};
+      })));
+    }else if(progressMetric==='reps'){
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>({date:r.date, value:Math.max(...r.sets.map(s=>Number(s.reps)||0))})), ''));
+    }else if(progressMetric==='volume'){
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>({date:r.date, value:Math.round(exerciseVolume(r.sets))})), ' '+wu()));
+    }else{
+      chartWrap.appendChild(buildLineChart(filtered.map(r=>({date:r.date, value:Math.max(...r.sets.map(s=>s.weight))}))));
+    }
+    chartCard.appendChild(chartWrap);
+
+    // history table
+    const histLbl=document.createElement('div'); histLbl.className='card-title section-sp'; histLbl.textContent='Session History';
+    chartCard.appendChild(histLbl);
+    historyForExercise(progressSelectedExercise, null).forEach(row=>{
+      const r=document.createElement('div'); r.className='history-item'; r.style.padding='10px 12px';
+      r.innerHTML=`<div class="hi-date" style="font-size:0.82rem;">${fmtDateShort(row.date)}</div><div class="prev-chips">${row.sets.map(s=>`<span class="set-chip">${s.weight}${wu()}×${s.reps}</span>`).join('')}</div>`;
+      chartCard.appendChild(r);
+    });
+  }
 
   app.appendChild(chartCard);
 }
 function filterByRange(rows, range){
   if(range==='all') return rows;
-  const days = {'7d':7,'30d':30,'3m':90,'6m':180}[range];
+  const days = {'7d':7,'30d':30,'3m':90,'6m':180,'1y':365}[range];
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-days);
   return rows.filter(r=> new Date(r.date+'T00:00:00') >= cutoff);
 }
-function buildLineChart(points){
+function buildLineChart(points, unitLabel){
+  const unit = unitLabel===undefined ? wu() : unitLabel;
   const w=560,h=160,pad=28;
   const vals=points.map(p=>p.value);
   const min=Math.min(...vals), max=Math.max(...vals);
@@ -1911,7 +2817,7 @@ function buildLineChart(points){
   <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-dim); margin-top:4px;">
     <span>${fmtDateShort(points[0].date)}</span><span>${fmtDateShort(points[points.length-1].date)}</span>
   </div>
-  <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Peak: ${max}${wu()} · Start: ${points[0].value}${wu()}</div>`;
+  <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Peak: ${max.toLocaleString()}${unit} · Start: ${points[0].value.toLocaleString()}${unit}</div>`;
   return container;
 }
 
@@ -2024,17 +2930,27 @@ function openWorkoutDetail(w){
   };
   const listEl=overlay.querySelector('#detailExList');
   w.exercises.forEach(ex=>{
+    const mode = getExerciseTracking(ex);
     const working=ex.sets.filter(s=>s.type!=='warmup');
     const div=document.createElement('div'); div.className='card'; div.style.background='var(--surface-2)'; div.style.marginTop='10px';
-    div.innerHTML=`<div style="font-family:'Oswald',sans-serif; font-size:0.9rem; margin-bottom:6px;">${escapeHtml(ex.name)}</div>
-      <div class="prev-chips">${working.map(s=>`<span class="set-chip">${s.weight}${wu()} × ${s.reps}${s.rir!==''&&s.rir!=null?' · RIR '+s.rir:''}</span>`).join('')||'<span style="color:var(--text-dim); font-size:0.78rem;">No sets logged</span>'}</div>`;
+    const title = escapeHtml(ex.name) + (ex.equipment ? ` <span class="ex-equip-tag">${escapeHtml(ex.equipment)}</span>` : '');
+    let chips;
+    if(mode==='timed'){
+      chips = working.filter(s=>Number(s.durationSec)>0).map(s=>`<span class="set-chip">${fmtMMSS(s.durationSec)}</span>`).join('');
+    }else if(mode==='cardio'){
+      chips = working.filter(s=>Number(s.durationSec)>0).map(s=>`<span class="set-chip">${fmtMMSS(s.durationSec)}${s.distanceKm?' · '+s.distanceKm+'km':''}${s.speedKmh?' · '+s.speedKmh+'km/h':''}</span>`).join('');
+    }else{
+      chips = working.map(s=>`<span class="set-chip">${s.weight}${wu()} × ${s.reps}${s.rir!==''&&s.rir!=null?' · RIR '+s.rir:''}</span>`).join('');
+    }
+    div.innerHTML=`<div style="font-family:'Oswald',sans-serif; font-size:0.9rem; margin-bottom:6px;">${title}</div>
+      <div class="prev-chips">${chips||'<span style="color:var(--text-dim); font-size:0.78rem;">No sets logged</span>'}</div>`;
     listEl.appendChild(div);
   });
   overlay.querySelector('#delWorkoutBtn').onclick=()=>{
-    if(confirm('Are you sure you want to delete this workout? This cannot be undone.')){
+    showConfirmModal('Are you sure you want to delete this workout? This cannot be undone.', ()=>{
       workouts = workouts.filter(x=>x.id!==w.id);
       saveWorkouts(); overlay.remove(); showToast('Workout deleted'); render();
-    }
+    }, {title:'Delete Workout?', okLabel:'Delete', danger:true});
   };
   overlay.querySelector('#editWorkoutBtn').onclick=()=>{
     overlay.remove();
@@ -2118,12 +3034,339 @@ function openPhotoViewer(p){
   overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
   overlay.onclick=(ev)=>{ if(ev.target===overlay) overlay.remove(); };
   overlay.querySelector('#pDelBtn').onclick=()=>{
-    if(confirm('Delete this photo? This cannot be undone.')){
+    showConfirmModal('Delete this photo? This cannot be undone.', ()=>{
       progressPhotos = progressPhotos.filter(x=>x.id!==p.id);
       saveProgressPhotos(); overlay.remove(); showToast('Photo deleted'); render();
-    }
+    }, {title:'Delete Photo?', okLabel:'Delete', danger:true});
   };
 }
+/* ================= WATER TRACKING ================= */
+const WATER_WAVE_SVG = `<svg viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0,10 Q25,0 50,10 T100,10 T150,10 T200,10 V20 H0 Z"/></svg>`;
+function todayWaterEntries(){ return water.entries.filter(e=>e.date===todayISO()); }function waterEntriesForDate(iso){ return water.entries.filter(e=>e.date===iso).sort((a,b)=>a.timestamp-b.timestamp); }
+function waterTotalForDate(iso){ return waterEntriesForDate(iso).reduce((s,e)=>s+e.amount,0); }
+function estimateWaterGoal(){
+  const bw = bodymetrics.bodyweight && bodymetrics.bodyweight.length ? bodymetrics.bodyweight[bodymetrics.bodyweight.length-1].weight : null;
+  if(!bw) return 3000;
+  // rough estimate: ~35ml per kg bodyweight, nudged up a bit for an active gym-goer
+  return Math.round((bw*35)/50)*50;
+}
+function addWaterEntry(amount){
+  water.entries.push({id:uid(), amount, timestamp:Date.now(), date:todayISO()});
+  saveWater();
+  doVibrate('light');
+  showToast(`+${amount} ml added 💧`);
+}
+function openNotificationPermissionModal(onAllow){
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  const modal=document.createElement('div');
+  modal.className='modal';
+  modal.innerHTML=`<div class="modal-head"><div class="modal-title">Enable Water Reminders</div><button class="modal-close">✕</button></div>
+    <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin:6px 0 16px;">
+      Water reminders need notification permission so the app can remind you to drink water during the hours you choose.
+    </div>
+    <button class="btn btn-primary btn-full" id="allowNotifBtn">Allow Notifications</button>`;
+  overlay.appendChild(modal);
+  document.getElementById('modalRoot').appendChild(overlay);
+  overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
+  overlay.onclick=(ev)=>{ if(ev.target===overlay) overlay.remove(); };
+  modal.querySelector('#allowNotifBtn').onclick=()=>{ overlay.remove(); onAllow(); };
+}
+/** Generic searchable exercise picker — used anywhere the user needs to pick from a list of
+ * exercises with history (Progress chart selector, "Add to Top Exercises", etc). */
+function openExerciseSearchPicker(list, onSelect, opts){
+  opts = opts || {};
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  const modal=document.createElement('div');
+  modal.className='modal';
+  modal.innerHTML=`<div class="modal-head"><div class="modal-title">${escapeHtml(opts.title||'Select Exercise')}</div><button class="modal-close">✕</button></div>
+    <input class="search-input" id="exPickSearch" placeholder="🔍 Search exercises...">
+    <div id="exPickList"></div>`;
+  overlay.appendChild(modal);
+  document.getElementById('modalRoot').appendChild(overlay);
+  overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
+  overlay.onclick=(ev)=>{ if(ev.target===overlay) overlay.remove(); };
+  const listEl = modal.querySelector('#exPickList');
+  function renderList(q){
+    const query=(q||'').trim().toLowerCase();
+    const filtered = query ? list.filter(ex=>ex.name.toLowerCase().includes(query)) : list;
+    listEl.innerHTML='';
+    if(filtered.length===0){
+      listEl.innerHTML=`<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:24px 0;">No exercises found</div>`;
+      return;
+    }
+    filtered.forEach(ex=>{
+      const row=document.createElement('div'); row.className='lib-item'; row.style.cursor='pointer';
+      row.innerHTML=`<span>${escapeHtml(ex.name)}</span><span style="color:var(--text-dim);">›</span>`;
+      row.onclick=()=>{ overlay.remove(); onSelect(ex); };
+      listEl.appendChild(row);
+    });
+  }
+  renderList('');
+  modal.querySelector('#exPickSearch').oninput=(e)=> renderList(e.target.value);
+}
+function showConfirmModal(message, onConfirm, opts){
+  opts = opts || {};
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay center';
+  const modal=document.createElement('div');
+  modal.className='modal confirm-modal';
+  modal.innerHTML=`<div class="modal-head"><div class="modal-title">${escapeHtml(opts.title||'Confirm')}</div><button class="modal-close">✕</button></div>
+    <div style="font-size:0.88rem; color:var(--text-muted); line-height:1.5; margin:6px 0 20px;">${escapeHtml(message)}</div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn" id="cmCancel" style="flex:1;">${escapeHtml(opts.cancelLabel||'Cancel')}</button>
+      <button class="btn ${opts.danger?'btn-danger':'btn-primary'}" id="cmOk" style="flex:1;">${escapeHtml(opts.okLabel||'Confirm')}</button>
+    </div>`;
+  overlay.appendChild(modal);
+  document.getElementById('modalRoot').appendChild(overlay);
+  overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
+  overlay.querySelector('#cmCancel').onclick=()=>overlay.remove();
+  overlay.onclick=(ev)=>{ if(ev.target===overlay) overlay.remove(); };
+  overlay.querySelector('#cmOk').onclick=()=>{ overlay.remove(); onConfirm(); };
+}
+function openPermissionDeniedModal(){
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  const modal=document.createElement('div');
+  modal.className='modal';
+  modal.innerHTML=`<div class="modal-head"><div class="modal-title">Notifications Needed</div><button class="modal-close">✕</button></div>
+    <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin:6px 0 16px;">
+      Notification permission is required for water reminders, and it looks like it's currently off for this app.
+      Open <b>Android Settings → Apps → Gym Tracker → Notifications</b> and turn notifications on, then come back and enable reminders again.
+    </div>
+    <button class="btn btn-primary btn-full" id="closeDeniedBtn">Got it</button>`;
+  overlay.appendChild(modal);
+  document.getElementById('modalRoot').appendChild(overlay);
+  overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
+  overlay.onclick=(ev)=>{ if(ev.target===overlay) overlay.remove(); };
+  modal.querySelector('#closeDeniedBtn').onclick=()=>overlay.remove();
+}
+function renderWater(app){
+  const viewDate = waterHistoryDate || todayISO();
+  const isToday = viewDate===todayISO();
+  const total = waterTotalForDate(viewDate);
+  const goal = water.goalMl || estimateWaterGoal();
+  const pct = Math.round((total/goal)*100);
+  const fillPct = Math.min(100, pct);
+  const remaining = Math.max(0, goal-total);
+  const servings = waterEntriesForDate(viewDate).length;
+
+  const hero=document.createElement('div');
+  hero.className='card';
+  hero.innerHTML=`
+    <div class="water-hero">
+      <div class="water-jar">
+        <div class="water-fill" style="height:${fillPct}%;">
+          <div class="water-wave w1">${WATER_WAVE_SVG}${WATER_WAVE_SVG}</div>
+          <div class="water-wave w2">${WATER_WAVE_SVG}${WATER_WAVE_SVG}</div>
+        </div>
+        <div class="water-jar-pct">${pct}%</div>
+      </div>
+      <div class="water-summary">
+        <div class="ws-main">${(total/1000).toFixed(2)} L / ${(goal/1000).toFixed(1)} L</div>
+        <div class="ws-sub">${isToday? `${remaining} ml remaining · ${servings} serving${servings===1?'':'s'}` : `${servings} serving${servings===1?'':'s'} logged that day`}</div>
+      </div>
+    </div>`;
+  app.appendChild(hero);
+
+  if(isToday){
+    const addCard=document.createElement('div');
+    addCard.className='card';
+    addCard.innerHTML=`<div class="card-title">Add Water</div>
+      <button class="water-add-btn" id="waterAddBtn">+ ${water.servingMl} ml</button>
+      <div class="form-group" style="margin-top:14px;"><label class="form-label">Custom Amount (ml)</label>
+        <div style="display:flex; gap:8px;">
+          <input class="form-input" type="number" id="waterCustomInput" placeholder="e.g. 400" style="flex:1; min-width:0;">
+          <button class="btn btn-ghost" id="waterCupPickerBtn" type="button" style="flex:none; width:auto; padding:0 14px;" title="Choose a cup/glass size">🥤</button>
+          <button class="btn" id="waterCustomAddBtn" style="flex:none; width:auto; padding:0 16px;">Set</button>
+        </div>
+        <div style="color:var(--text-dim); font-size:0.68rem; margin-top:6px;">Sets this as your default serving above — tap "+ ${water.servingMl} ml" to actually log water.</div>
+      </div>`;
+    app.appendChild(addCard);
+    addCard.querySelector('#waterAddBtn').onclick=()=>{ addWaterEntry(water.servingMl); render(); };
+    addCard.querySelector('#waterCustomAddBtn').onclick=()=>{
+      const v=Number(addCard.querySelector('#waterCustomInput').value);
+      if(v>0){ water.servingMl=Math.round(v); saveWater(); showToast(`Default serving set to ${Math.round(v)} ml`); render(); }
+    };
+    addCard.querySelector('#waterCupPickerBtn').onclick=()=> openCupPicker();
+  }
+
+  function openCupPicker(){
+    const overlay=document.createElement('div');
+    overlay.className='modal-overlay';
+    const modal=document.createElement('div');
+    modal.className='modal';
+    const servingOptions=[
+      {v:200,label:'Small Cup'},{v:250,label:'Cup'},{v:300,label:'Glass'},
+      {v:350,label:'Big Glass'},{v:500,label:'Bottle'},{v:750,label:'Large Bottle'},{v:1000,label:'Jug'}
+    ];
+    const maxV = 1000;
+    modal.innerHTML=`<div class="modal-head"><div class="modal-title">Choose Serving Size</div><button class="modal-close">✕</button></div>
+      <div class="cup-grid">
+        ${servingOptions.map(o=>{
+          const scale = (0.55 + (o.v/maxV)*0.45).toFixed(2);
+          return `<button type="button" class="cup-option" data-v="${o.v}">
+            <span class="cup-icon" style="transform:scale(${scale});">🥤</span>
+            <span class="cup-v">${o.v} ml</span>
+            <span class="cup-lbl">${o.label}</span>
+          </button>`;
+        }).join('')}
+      </div>`;
+    overlay.appendChild(modal);
+    document.getElementById('modalRoot').appendChild(overlay);
+    overlay.querySelector('.modal-close').onclick=()=>overlay.remove();
+    overlay.onclick=(ev)=>{ if(ev.target===overlay) overlay.remove(); };
+    modal.querySelectorAll('.cup-option').forEach(btn=>{
+      btn.onclick=()=>{
+        const v=Number(btn.dataset.v);
+        water.servingMl=v; saveWater();
+        overlay.remove();
+        showToast(`Default serving set to ${v} ml`);
+        render();
+      };
+    });
+  }
+  const goalCard=document.createElement('div');
+  goalCard.className='card';
+  goalCard.innerHTML=`<div class="card-title">Daily Goal</div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <input class="form-input" type="number" id="waterGoalInput" value="${goal}" style="flex:1; min-width:0;">
+      <span style="color:var(--text-muted); font-size:0.8rem;">ml</span>
+      <button class="btn btn-primary" id="waterGoalSaveBtn" style="flex:none; width:auto; padding:0 16px;">Save</button>
+    </div>
+    <div style="color:var(--text-muted); font-size:0.72rem; margin-top:8px;">Estimated suggestion: ${estimateWaterGoal()} ml/day, based on your logged body weight. This is a general estimate, not medical advice — adjust as you like.</div>`;
+  app.appendChild(goalCard);
+  goalCard.querySelector('#waterGoalSaveBtn').onclick=()=>{
+    const v=Number(goalCard.querySelector('#waterGoalInput').value);
+    if(v>0){ water.goalMl=Math.round(v); saveWater(); showToast('Goal updated'); render(); }
+  };
+
+  // Smart suggestion + creatine note
+  const didWorkoutToday = workouts.some(w=>w.date===todayISO());
+  const sugCard=document.createElement('div');
+  sugCard.className='glass-card insight-card';
+  sugCard.innerHTML=`<div class="insight-status">💧 Hydration Suggestion</div>
+    <div class="insight-msg">Based on your body weight${didWorkoutToday?' and today\'s workout':''}, aim for roughly ${estimateWaterGoal() + (didWorkoutToday?500:0)} ml today. This is an estimate — adjust to what feels right for you.</div>`;
+  app.appendChild(sugCard);
+
+  const creatineCard=document.createElement('div');
+  creatineCard.className='card';
+  creatineCard.innerHTML=`<div class="toggle-row"><span style="font-size:0.88rem;">I take creatine</span><label class="switch"><input type="checkbox" id="waterCreatineToggle" ${water.takesCreatine?'checked':''}><span class="slider"></span></label></div>
+    ${water.takesCreatine?`<div style="color:var(--text-muted); font-size:0.78rem; margin-top:8px;">If you use creatine, keeping your hydration steady through the day is generally recommended. Your progress today: ${(total/1000).toFixed(2)} L / ${(goal/1000).toFixed(1)} L.</div>`:''}`;
+  app.appendChild(creatineCard);
+  creatineCard.querySelector('#waterCreatineToggle').onchange=(e)=>{ water.takesCreatine=e.target.checked; saveWater(); render(); };
+
+  // Reminders
+  const rem = water.reminders;
+  const remCard=document.createElement('div');
+  remCard.className='card';
+  remCard.innerHTML=`<div class="card-title">Water Reminders ⏰</div>
+    <div class="toggle-row"><span style="font-size:0.88rem;">Enable Reminders</span><label class="switch"><input type="checkbox" id="remEnable" ${rem.enabled?'checked':''}><span class="slider"></span></label></div>
+    <div class="form-group" style="margin-top:10px;"><label class="form-label">Reminder Interval</label>
+      <select class="form-input" id="remInterval">
+        ${[30,45,60,90,120].map(v=>`<option value="${v}" ${rem.intervalMin==v?'selected':''}>${v} min</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-row" style="display:flex; gap:10px;">
+      <div class="form-group" style="flex:1;"><label class="form-label">Start</label><input class="form-input" type="time" id="remStart" value="${rem.startTime}"></div>
+      <div class="form-group" style="flex:1;"><label class="form-label">End</label><input class="form-input" type="time" id="remEnd" value="${rem.endTime}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Reminder Sound</label>
+      <select class="form-input" id="remSound">
+        <option value="drop" ${rem.sound==='drop'?'selected':''}>Water Drop</option>
+        <option value="splash" ${rem.sound==='splash'?'selected':''}>Gentle Splash</option>
+        <option value="silent" ${rem.sound==='silent'?'selected':''}>Silent</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-full" id="remSaveBtn" style="margin-top:6px;">Save Reminder Settings</button>
+    <button type="button" class="btn" id="remTestBtn" style="margin-top:8px; width:100%; font-size:0.75rem;">🧪 Send Test Reminder (~1 min)</button>
+    <div style="color:var(--text-muted); font-size:0.72rem; margin-top:10px;" id="remHint">${isNativeApp()?'When you enable reminders, we\'ll ask for notification permission first.':'Reminders only fire from the installed Android app, not the website.'}</div>`;
+  app.appendChild(remCard);
+  remCard.querySelector('#remTestBtn').onclick=()=> sendTestWaterReminder();
+  remCard.querySelector('#remSaveBtn').onclick=async ()=>{
+    const wantsEnabled = remCard.querySelector('#remEnable').checked;
+    const newRem = {
+      enabled: false, // set true below only after permission confirmed
+      intervalMin: Number(remCard.querySelector('#remInterval').value),
+      startTime: remCard.querySelector('#remStart').value,
+      endTime: remCard.querySelector('#remEnd').value,
+      sound: remCard.querySelector('#remSound').value
+    };
+    if(!wantsEnabled){
+      water.reminders = newRem; saveWater();
+      await cancelWaterReminders();
+      showToast('Reminders turned off');
+      render();
+      return;
+    }
+    if(!isNativeApp()){
+      showToast('Install the Android app to use reminders');
+      return;
+    }
+    async function finishEnabling(){
+      newRem.enabled = true;
+      water.reminders = newRem; saveWater();
+      await scheduleWaterReminders();
+      showToast('Water reminders enabled 💧');
+      render();
+    }
+    // If permission is already granted, don't show the explainer modal or request again — just save + schedule.
+    const already = await ensureNotificationPermission(false);
+    if(already.granted){ await finishEnabling(); return; }
+    openNotificationPermissionModal(async ()=>{
+      const result = await ensureNotificationPermission(true);
+      if(!result.granted){
+        if(result.reason==='denied') openPermissionDeniedModal();
+        else showToast('Could not confirm notification permission — please try again');
+        return;
+      }
+      await finishEnabling();
+    });
+  };
+
+  // History
+  const histCard=document.createElement('div');
+  histCard.className='card';
+  histCard.innerHTML=`<div class="card-title">Water History</div>`;
+  const dayNav=document.createElement('div'); dayNav.className='water-day-nav';
+  dayNav.innerHTML=`<button id="wPrevDay">‹</button><span class="wdn-label">${isToday?'Today':fmtDateShort(viewDate)}</span><button id="wNextDay" ${isToday?'disabled style="opacity:0.35;"':''}>›</button>`;
+  histCard.appendChild(dayNav);
+  dayNav.querySelector('#wPrevDay').onclick=()=>{
+    const d=new Date(viewDate+'T12:00:00'); d.setDate(d.getDate()-1);
+    waterHistoryDate=d.toISOString().slice(0,10); render();
+  };
+  if(!isToday){
+    dayNav.querySelector('#wNextDay').onclick=()=>{
+      const d=new Date(viewDate+'T12:00:00'); d.setDate(d.getDate()+1);
+      const nextIso=d.toISOString().slice(0,10);
+      waterHistoryDate = nextIso===todayISO() ? null : nextIso;
+      render();
+    };
+  }
+  const entries = waterEntriesForDate(viewDate);
+  if(entries.length===0){
+    histCard.innerHTML+=`<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:16px 0;">No water logged this day.</div>`;
+  }else{
+    entries.forEach(e=>{
+      const row=document.createElement('div'); row.className='water-hist-row';
+      const t=new Date(e.timestamp);
+      row.innerHTML=`<span style="font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--text-muted);">${t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span><span style="font-family:'JetBrains Mono',monospace; font-size:0.85rem;">+${e.amount} ml</span>`;
+      if(isToday){
+        const delBtn=document.createElement('button');
+        delBtn.className='icon-btn'; delBtn.textContent='✕'; delBtn.style.fontSize='0.9rem';
+        delBtn.onclick=()=>{ water.entries=water.entries.filter(x=>x.id!==e.id); saveWater(); render(); };
+        row.appendChild(delBtn);
+      }
+      histCard.appendChild(row);
+    });
+    const totalRow=document.createElement('div'); totalRow.style.cssText='text-align:center; margin-top:10px; font-family:\'JetBrains Mono\',monospace; font-size:0.85rem; color:var(--text-muted);';
+    totalRow.textContent=`Total: ${(waterTotalForDate(viewDate)/1000).toFixed(2)} L`;
+    histCard.appendChild(totalRow);
+  }
+  app.appendChild(histCard);
+}
+
 /* ================= DIET (optional simple calorie/protein log) ================= */
 function renderDiet(app){
   const dateEntries = dietLog[dietViewDate] || [];
@@ -2241,7 +3484,17 @@ function renderSettings(app){
         ${[30,45,60,75,90,120,150,180].map(v=>`<option value="${v}" ${settings.restDefault==v?'selected':''}>${v}s</option>`).join('')}
       </select>
     </div>
-    <div class="toggle-row"><span style="font-size:0.88rem;">Rest timer sound</span><label class="switch"><input type="checkbox" id="setSound" ${settings.sound?'checked':''}><span class="slider"></span></label></div>
+    <div class="toggle-row"><span style="font-size:0.88rem;">Completion sound</span><label class="switch"><input type="checkbox" id="setSound" ${settings.sound?'checked':''}><span class="slider"></span></label></div>
+    <div class="form-group" style="margin-top:6px;"><label class="form-label">Sound Intensity</label>
+      <div style="display:flex; gap:8px;">
+        <select class="form-input" id="setSoundIntensity" style="flex:1;">
+          <option value="soft" ${settings.soundIntensity==='soft'?'selected':''}>Soft</option>
+          <option value="normal" ${(!settings.soundIntensity||settings.soundIntensity==='normal')?'selected':''}>Normal</option>
+          <option value="strong" ${settings.soundIntensity==='strong'?'selected':''}>Strong</option>
+        </select>
+        <button type="button" class="btn" id="testSoundBtn" style="flex:none; padding:0 16px;">▶ Test</button>
+      </div>
+    </div>
     <div class="toggle-row"><span style="font-size:0.88rem;">Vibration</span><label class="switch"><input type="checkbox" id="setVibe" ${settings.vibration?'checked':''}><span class="slider"></span></label></div>
     <div class="form-group" style="margin-top:10px;"><label class="form-label">Weight +/- Step Size</label>
       <select class="form-input" id="setWInc">
@@ -2260,10 +3513,18 @@ function renderSettings(app){
     settings.weightUnit=document.getElementById('setUnit').value;
     settings.restDefault=Number(document.getElementById('setRest').value);
     settings.sound=document.getElementById('setSound').checked;
+    settings.soundIntensity=document.getElementById('setSoundIntensity').value;
     settings.vibration=document.getElementById('setVibe').checked;
     settings.weightIncrement=Number(document.getElementById('setWInc').value);
     settings.barWeight=Number(document.getElementById('setBar').value);
     saveSettings(); showToast('Settings saved');
+  };
+  card.querySelector('#testSoundBtn').onclick=()=>{
+    const prevIntensity = settings.soundIntensity;
+    settings.soundIntensity = document.getElementById('setSoundIntensity').value;
+    playCompletionSound();
+    doVibrate('medium');
+    settings.soundIntensity = prevIntensity;
   };
 
   // Bodyweight
@@ -2368,26 +3629,34 @@ function renderSettings(app){
   const syncCard=document.createElement('div');
   syncCard.className='card';
   const statusColor = syncConnected ? (syncStatus==='error'?'var(--danger)':'var(--good)') : 'var(--text-muted)';
-  const statusText = syncConnected ? (syncStatus==='error'?'Sync error':'Connected · synced') : 'Not connected';
+  const statusText = syncConnected ? (syncStatus==='error'?'Sync error':(manualSyncActive?'Connected · code · synced':'Connected · synced')) : 'Not connected';
 
   syncCard.innerHTML=`<div class="card-title">Cloud Sync <span style="color:${statusColor}; font-size:0.68rem; text-transform:none; letter-spacing:0;">● ${statusText}</span></div>
-    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Your workout data syncs securely to your Google account across your phone and laptop using Firebase.</p>`;
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Your workout data syncs securely across your phone and laptop using Firebase.</p>`;
 
-  if(!currentUser){
+  if(!currentUser && !manualSyncActive){
     syncCard.innerHTML+=`
-      <button class="btn btn-steel btn-full" id="googleSignInBtn">Continue with Google</button>`;
-  }else{
+      <button class="btn btn-steel btn-full" id="googleSignInBtn">Continue with Google</button>
+      <p style="font-size:0.72rem; color:var(--text-dim); margin-top:6px;">Signs you in securely — your data is private to your Google account.</p>`;
+  }else if(currentUser){
     syncCard.innerHTML+=`
       <div class="link-row"><span>Signed in as</span><span class="mono" style="font-size:0.7rem; max-width:62%; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(currentUser.email||currentUser.displayName||'Google account')}</span></div>
       <div class="form-row" style="margin-top:10px;">
         <button class="btn btn-ghost btn-block" id="syncNowBtn">Sync Now</button>
         <button class="btn btn-danger btn-block" id="syncSignOutBtn">Sign Out</button>
       </div>`;
+  }else if(manualSyncActive){
+    syncCard.innerHTML+=`
+      <div class="link-row"><span>Synced with code</span><span class="mono">${escapeHtml(manualSyncCode)}</span></div>
+      <div class="form-row" style="margin-top:10px;">
+        <button class="btn btn-ghost btn-block" id="syncNowBtn">Sync Now</button>
+        <button class="btn btn-danger btn-block" id="syncSignOutBtn">Disconnect</button>
+      </div>`;
   }
 
   app.appendChild(syncCard);
 
-  if(!currentUser){
+  if(!currentUser && !manualSyncActive){
     syncCard.querySelector('#googleSignInBtn').onclick=()=>signInWithGoogle();
   }else{
     syncCard.querySelector('#syncNowBtn').onclick=async()=>{
@@ -2397,10 +3666,43 @@ function renderSettings(app){
       render();
     };
     syncCard.querySelector('#syncSignOutBtn').onclick=()=>{
-      if(confirm('Sign out of Google? Your cloud data will remain safe in Firebase.')){
-        signOutGoogle();
+      if(manualSyncActive){
+        showConfirmModal('Disconnect this sync code? Your data stays safe on this device and in the cloud.', ()=>{
+          disconnectSyncCode(); showToast('Disconnected'); render();
+        }, {title:'Disconnect Sync Code?', okLabel:'Disconnect'});
+      }else{
+        showConfirmModal('Sign out of Google? Your cloud data will remain safe in Firebase.', ()=>{
+          signOutGoogle();
+        }, {title:'Sign Out?', okLabel:'Sign Out'});
       }
     };
+  }
+
+  // Sync Code — secondary/advanced fallback only. Google Sign-In is primary.
+  if(!currentUser && !manualSyncActive){
+    if(!window._showSyncCodeAdvanced){
+      const advLink=document.createElement('div');
+      advLink.style.cssText='text-align:center; margin-bottom:14px;';
+      advLink.innerHTML=`<button class="icon-btn" style="font-size:0.78rem; text-decoration:underline;" id="showAdvSyncBtn">Trouble with Google Sign-In? Use a code instead (advanced)</button>`;
+      app.appendChild(advLink);
+      advLink.querySelector('#showAdvSyncBtn').onclick=()=>{ window._showSyncCodeAdvanced=true; render(); };
+    }else{
+      const codeCard=document.createElement('div');
+      codeCard.className='card';
+      codeCard.innerHTML=`<div class="card-title">Sync With a Code <span style="text-transform:none; letter-spacing:0; font-size:0.68rem; color:var(--text-dim);">advanced / fallback</span></div>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:12px;">Pick any code and use the exact same one on every device you want synced. Less secure than Google — anyone with the code can access that data.</p>
+        <input class="form-input" id="syncCodeInput" placeholder="e.g. vinit-gym-2026" style="margin-bottom:10px;">
+        <button class="btn btn-ghost btn-full" id="syncCodeBtn">Connect With Code</button>`;
+      app.appendChild(codeCard);
+      codeCard.querySelector('#syncCodeBtn').onclick=async()=>{
+        const code=document.getElementById('syncCodeInput').value.trim();
+        if(!code){ showToast('Enter a code first'); return; }
+        showToast('Connecting...');
+        const r=await connectSyncCode(code);
+        if(r.ok){ showToast('Connected & synced ☁️'); render(); }
+        else{ showToast(r.msg||'Could not connect'); }
+      };
+    }
   }
 
   // Data
@@ -2412,10 +3714,35 @@ function renderSettings(app){
   app.appendChild(dataCard);
   dataCard.querySelector('#exportBtn').onclick=exportCSV;
   dataCard.querySelector('#clearBtn').onclick=()=>{
-    if(confirm('This deletes your entire plan, workout history, and settings permanently. Continue?')){
-      if(confirm('Really sure? This cannot be undone.')){
-        clearAllData();
-      }
+    showConfirmModal('This deletes your entire plan, workout history, and settings permanently. Continue?', ()=>{
+      showConfirmModal('Really sure? This cannot be undone.', ()=>{ clearAllData(); }, {title:'Final Confirmation', okLabel:'Yes, Delete Everything', danger:true});
+    }, {title:'Clear All Data?', okLabel:'Continue', danger:true});
+  };
+
+  // App Update
+  const updateCard=document.createElement('div');
+  updateCard.className='card';
+  updateCard.innerHTML=`<div class="card-title">App Update</div>
+    <div class="link-row"><span>Current version</span><span class="mono" style="color:var(--text-muted);">v${escapeHtml(APP_VERSION)}</span></div>
+    <button class="btn btn-ghost btn-full" id="checkUpdateBtn" style="margin-top:8px;">Check for Updates</button>
+    <div id="updateStatusLine" style="font-size:0.76rem; color:var(--text-muted); margin-top:8px; text-align:center;"></div>`;
+  app.appendChild(updateCard);
+  updateCard.querySelector('#checkUpdateBtn').onclick=async ()=>{
+    const statusLine = updateCard.querySelector('#updateStatusLine');
+    const btn = updateCard.querySelector('#checkUpdateBtn');
+    btn.disabled = true;
+    statusLine.textContent = 'Checking for updates...';
+    const result = await checkForUpdates(true);
+    btn.disabled = false;
+    if(result.status==='update-available'){
+      statusLine.textContent = `Update available — v${result.latestVersion}`;
+      openUpdateModal(result);
+    }else if(result.status==='up-to-date'){
+      statusLine.textContent = "You're up to date ✓";
+    }else if(result.status==='offline'){
+      statusLine.textContent = "You're offline. Please connect to the internet and try again.";
+    }else{
+      statusLine.textContent = "Couldn't check for updates right now. Try again later.";
     }
   };
 
@@ -2447,64 +3774,164 @@ function exportCSV(){
   }
 }
 async function clearAllData(){
-  settings={name:'', weightUnit:'kg', restDefault:90, sound:true, vibration:true, setupDone:false};
+  settings={name:'', weightUnit:'kg', restDefault:90, sound:true, soundIntensity:'normal', vibration:true, setupDone:false};
   plan={}; DAYS.forEach(d=>plan[d]={name:'',isRest:false,exercises:[]});
   workouts=[]; activeWorkout=null; bodymetrics={bodyweight:[],measurements:[]};
-  await Promise.all([saveSettings(), savePlan(), saveWorkouts(), saveActiveWorkout(), saveBodymetrics()]);
+  water={ entries:[], goalMl:3000, servingMl:300, takesCreatine:false, reminders:{enabled:false, intervalMin:60, startTime:'08:00', endTime:'22:00', sound:'drop'} };
+  await Promise.all([saveSettings(), savePlan(), saveWorkouts(), saveActiveWorkout(), saveBodymetrics(), saveWater()]);
   view='onboarding';
   render();
 }
 
-/* ================= START ================= */
-function initCapacitorBridge(){
-  const cap = window.Capacitor;
-  if(!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return;
-
-  document.body.classList.add('capacitor-native');
-
-  const plugins = cap.Plugins || {};
-  if(plugins.StatusBar){
-    plugins.StatusBar.setOverlaysWebView && plugins.StatusBar.setOverlaysWebView({ overlay:false }).catch(()=>{});
-    plugins.StatusBar.setBackgroundColor({ color:'#101215' }).catch(()=>{});
-    plugins.StatusBar.setStyle({ style:'DARK' }).catch(()=>{});
-  }
-  if(plugins.SplashScreen){
-    plugins.SplashScreen.hide().catch(()=>{});
-  }
-  if(plugins.Keyboard){
-    plugins.Keyboard.setResizeMode && plugins.Keyboard.setResizeMode({ mode:'body' }).catch(()=>{});
-    plugins.Keyboard.addListener('keyboardDidShow', ()=>{
-      setTimeout(()=>{
-        const el = document.activeElement;
-        if(el && /INPUT|TEXTAREA|SELECT/.test(el.tagName)){
-          el.scrollIntoView({ block:'center', behavior:'smooth' });
-        }
-      }, 80);
-    });
-  }
-  if(plugins.App){
-    plugins.App.addListener('backButton', ()=>{
-      const modalRoot = document.getElementById('modalRoot');
-      const modal = modalRoot && modalRoot.lastElementChild;
-      if(modal){
-        modal.remove();
-        return;
+/* ================= WATER REMINDER NOTIFICATIONS (native) ================= */
+function nativeLocalNotifPlugin(){
+  return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) || null;
+}
+function nativeAppPlugin(){
+  return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) || null;
+}
+const WATER_REMINDER_ID_BASE = 90000; // reserved id range for water reminder notifications
+const WATER_TEST_NOTIF_ID = 99999;
+// v2 channel IDs: Android notification channels are IMMUTABLE once created (sound can't change after
+// first creation). If an earlier build ever created a channel before the custom sound files existed,
+// that old channel would be permanently stuck on the default sound. Bumping to _v2 guarantees a fresh
+// channel that correctly picks up water_drop.wav / water_splash.wav, without touching/deleting the old one.
+const WATER_CHANNELS = {
+  drop:   {id:'water_drop_channel_v2',   name:'Water Reminders (Drop)',   sound:'water_drop.wav'},
+  splash: {id:'water_splash_channel_v2', name:'Water Reminders (Splash)', sound:'water_splash.wav'},
+  silent: {id:'water_silent_channel_v2', name:'Water Reminders (Silent)', sound:null},
+};
+let waterChannelsReady = false;
+async function ensureWaterChannels(){
+  const ln = nativeLocalNotifPlugin();
+  if(!ln || waterChannelsReady) return;
+  try{
+    for(const key in WATER_CHANNELS){
+      const c = WATER_CHANNELS[key];
+      const opts = { id:c.id, name:c.name, importance:4, visibility:1, vibration:true };
+      if(c.sound) opts.sound = c.sound;
+      await ln.createChannel(opts);
+    }
+    waterChannelsReady = true;
+  }catch(e){ /* channel creation isn't critical-path; reminders still work without a custom channel */ }
+}
+/**
+ * Checks (and optionally requests) Android notification permission.
+ * IMPORTANT: only pass requestIfNeeded=true from a direct user tap (Save / Test Reminder) —
+ * never from background flows like app-resume or boot, since an unprompted system dialog
+ * outside a user gesture is against Android guidelines and some OEMs auto-deny it.
+ * Returns {granted, reason} instead of a bare boolean so callers can tell "genuinely denied"
+ * apart from "couldn't confirm yet" and react appropriately.
+ */
+async function ensureNotificationPermission(requestIfNeeded){
+  const ln = nativeLocalNotifPlugin();
+  if(!ln) return {granted:false, reason:'unavailable'};
+  try{
+    let cur = await ln.checkPermissions();
+    if(cur.display === 'granted') return {granted:true, reason:'granted'};
+    if(!requestIfNeeded) return {granted:false, reason:cur.display};
+    let res = await ln.requestPermissions();
+    if(res.display !== 'granted'){
+      // Settle-recheck: right after the OS dialog closes, the underlying permission state can
+      // take a brief moment to propagate. Re-checking once after a short delay avoids treating
+      // a just-granted permission as denied.
+      await new Promise(r=>setTimeout(r,450));
+      res = await ln.checkPermissions();
+    }
+    return {granted: res.display==='granted', reason: res.display};
+  }catch(e){ return {granted:false, reason:'error'}; }
+}
+async function cancelWaterReminders(){
+  const ln = nativeLocalNotifPlugin();
+  if(!ln) return;
+  try{
+    const ids = [];
+    for(let i=0;i<48;i++) ids.push({id: WATER_REMINDER_ID_BASE+i});
+    await ln.cancel({ notifications: ids });
+  }catch(e){}
+}
+async function scheduleWaterReminders(){
+  const ln = nativeLocalNotifPlugin();
+  if(!ln || !isNativeApp()) return;
+  await cancelWaterReminders();
+  const rem = water.reminders;
+  if(!rem || !rem.enabled) return;
+  // Only CHECK here — never re-request. Requesting must only ever happen from a direct user tap
+  // (see the Save button and Test Reminder handlers), so this function is safe to call silently
+  // on app resume / boot without ever popping an unexpected system dialog.
+  const check = await ensureNotificationPermission(false);
+  if(!check.granted) return;
+  await ensureWaterChannels();
+  const channel = WATER_CHANNELS[rem.sound] || WATER_CHANNELS.drop;
+  const [sh,sm] = (rem.startTime||'08:00').split(':').map(Number);
+  const [eh,em] = (rem.endTime||'22:00').split(':').map(Number);
+  const interval = Math.max(15, Number(rem.intervalMin)||60);
+  const now = new Date();
+  const notifications = [];
+  let idCounter = 0;
+  // schedule for today and tomorrow so there's always a buffer even if the app isn't reopened
+  for(let dayOffset=0; dayOffset<=1 && idCounter<48; dayOffset++){
+    const dayStart = new Date(now); dayStart.setDate(now.getDate()+dayOffset);
+    dayStart.setHours(sh, sm, 0, 0);
+    const dayEnd = new Date(now); dayEnd.setDate(now.getDate()+dayOffset);
+    dayEnd.setHours(eh, em, 0, 0);
+    let t = new Date(dayStart);
+    while(t <= dayEnd && idCounter<48){
+      if(t > now){
+        notifications.push({
+          id: WATER_REMINDER_ID_BASE + idCounter,
+          title: 'Time to hydrate 💧',
+          body: `Stay on track — log a glass of water in Gym Tracker.`,
+          schedule: { at: new Date(t) },
+          channelId: channel.id,
+          smallIcon: 'ic_stat_water',
+        });
+        idCounter++;
       }
-      if(view === 'settings' || view === 'plan' || view === 'progress' || view === 'history' || view === 'diet'){
-        navigate('dashboard');
-        return;
-      }
-      if(view === 'workout' && activeWorkout){
-        navigate('dashboard');
-        return;
-      }
-      plugins.App.exitApp();
-    });
+      t = new Date(t.getTime() + interval*60000);
+    }
+  }
+  if(notifications.length){
+    try{ await ln.schedule({ notifications }); }catch(e){}
+  }
+}
+async function sendTestWaterReminder(){
+  if(!isNativeApp()){ showToast('Install the Android app to test reminders'); return; }
+  const ln = nativeLocalNotifPlugin();
+  if(!ln){ showToast('Notifications plugin not available — run npx cap sync android'); return; }
+  const check = await ensureNotificationPermission(true); // direct user tap — OK to request here
+  if(!check.granted){
+    if(check.reason==='denied') openPermissionDeniedModal();
+    else showToast('Could not confirm notification permission — try again');
+    return;
+  }
+  await ensureWaterChannels();
+  const rem = water.reminders || {sound:'drop'};
+  const channel = WATER_CHANNELS[rem.sound] || WATER_CHANNELS.drop;
+  try{
+    await ln.cancel({ notifications:[{id:WATER_TEST_NOTIF_ID}] });
+    await ln.schedule({ notifications:[{
+      id: WATER_TEST_NOTIF_ID,
+      title: 'Time to hydrate 💧 (Test)',
+      body: 'This is a test water reminder — your real reminders will look like this.',
+      schedule: { at: new Date(Date.now()+60000) },
+      channelId: channel.id,
+      smallIcon: 'ic_stat_water',
+    }]});
+    showToast('Test reminder scheduled — check in ~1 min');
+  }catch(e){ showToast('Could not schedule test reminder'); }
+}
+function initNativeWaterReminders(){
+  if(!isNativeApp()) return;
+  scheduleWaterReminders();
+  const app = nativeAppPlugin();
+  if(app && app.addListener){
+    app.addListener('resume', ()=> scheduleWaterReminders());
   }
 }
 
-initCapacitorBridge();
-loadAll().then(()=>initFirebase());
+/* ================= START ================= */
+loadAll().then(()=>{ initFirebase(); tryAutoConnectSyncCode(); initNativeWaterReminders(); runStartupUpdateCheck(); });
 </script>
 </body>
 </html>
